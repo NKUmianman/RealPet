@@ -16,6 +16,7 @@ class GestureRecognition:
         self.index_finger_landmarks = None
         self.index_finger_trajectory=None
         self.signalfuctin=signalfuctin
+        self.signalflag=False
 
     def detect_pinch_gesture(self,handLms):
         thumb_tip = handLms[4]  # 拇指指尖
@@ -43,19 +44,25 @@ class GestureRecognition:
 
             # 处理移动向量（例如，打印或在你的应用程序中使用它）
             print("食指移动：", movement_vector)
-            self.signalfuctin(self.index_finger_trajectory)
+            self.signalfuctin[0].set_variable(self.index_finger_trajectory)
+            self.signalflag=True
             return movement_vector
-        return (0,0)
+        if self.signalflag==True:
+            self.signalfuctin[0].set_variable(None)
+            self.signalflag=False
+        return None
     
     def run(self):
         while True:
             ret, img = self.cap.read()
+            img = cv2.flip(img, 1)  # 1 for horizontal flip
             if ret:
                 imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 result = self.hands.process(imgRGB)
                 # print(result.multi_hand_landmarks)
                 imgHeight = img.shape[0]
                 imgWidth = img.shape[1]
+
                 if result.multi_hand_landmarks:
                     for handLms in result.multi_hand_landmarks:
                         self.mpDraw.draw_landmarks(
@@ -70,6 +77,7 @@ class GestureRecognition:
                             #     cv2.circle(img, (xpos, ypos), 10, (0,0,255), cv2.FILLED)
                             # print(i, xpos, ypos)
                         self.index_finger_trajectory=self.track_index_finger_movement(handsPoints)
+                        
                         if self.detect_pinch_gesture(handsPoints):
                             cv2.putText(img, "Pinch Gesture Detected", (30, 100),
                                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
@@ -82,7 +90,6 @@ class GestureRecognition:
                 self.pTime = self.cTime
                 cv2.putText(img, f"fps: {int(fps)}", (30, 50),
                             cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
-
                 cv2.imshow('img', img)
 
             if cv2.waitKey(1) == ord('q'):

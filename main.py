@@ -23,16 +23,17 @@ class SharedResource:
             return self.variable
 
 def handtask(shared_resource):
-    gest=hand.GestureRecognition(signalfuctin=shared_resource.set_variable)
+    gest=hand.GestureRecognition(signalfuctin=shared_resource)
     gest.run()
 
 def pettask(shared_resource):
-    pet.run(signalfuctin=shared_resource.get_variable)
+    pet.run(signalfuctin=shared_resource)
     
 index_finger_trajectory=SharedResource()
+sample=SharedResource()
 # 创建线程对象
-thread1 = threading.Thread(target=handtask,args=(index_finger_trajectory,))
-thread2 = threading.Thread(target=pettask,args=(index_finger_trajectory,))
+thread1 = threading.Thread(target=handtask,args=([index_finger_trajectory,sample],))
+thread2 = threading.Thread(target=pettask,args=([index_finger_trajectory,sample],))
 
 # 启动线程
 thread1.start()
