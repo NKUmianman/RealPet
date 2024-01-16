@@ -54,57 +54,60 @@ def result_inference(input_array):  # 推理环节
     result = list_attr_cn[possibility[0]]
     return result
 
+def run(signalfuctin=None):
+    with mp_face_detection.FaceDetection(
+            model_selection=1, min_detection_confidence=0.5) as face_detection:
+        # 人脸识别，1为通用模型，0为近距离模型
+        while cap.isOpened():
+            a1 = time.time()
+            success, image = cap.read()
+            if not success:
+                print("Ignoring empty camera frame.")
+                continue
+            image.flags.writeable = False  # 据说这样写可以加速人脸识别推理
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            results = face_detection.process(image)
+            image.flags.writeable = True
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+            image2 = image.copy()  # copy复制，因为cv2会直接覆盖原有数组
+            if results.detections:
+                for detection in results.detections:
+                    mp_drawing.draw_detection(image, detection)
+                    image_rows, image_cols, _ = image.shape
+                    location = detection.location_data.relative_bounding_box  # 获取人脸位置
+                    start_point = mp_drawing._normalized_to_pixel_coordinates(
+                        location.xmin, location.ymin, image_cols, image_rows)  # 获取人脸左上角的点
+                    end_point = mp_drawing._normalized_to_pixel_coordinates(
+                        location.xmin + location.width, location.ymin + location.height, image_cols, image_rows)  # 获取右下角的点
+                    if start_point == None or end_point == None:
+                        break
+                    x1, y1 = start_point  # 左上点坐标
+                    x2, y2 = end_point  # 右下点坐标
+                    # 为了营造相似环境，把左上角和右上角的点连线囊括的区域扩大提高准确度
+                    img_infer = image2[y1-70:y2, x1-50:x2+50].copy()
+                    img_infer = cv2_preprocess(img_infer)
+                    result = result_inference(img_infer)
+                    # cv2.imshow('test', img_infer)
+                    # if cv2.waitKey(5) & 0xFF == 27:
+                    #   break
+                    for i in range(0, len(result)):
+                        # 将OpenCV图像从BGR转换为RGB
+                        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                        image = Image.fromarray(image)
+                        draw = ImageDraw.Draw(image)
+                        font = ImageFont.truetype(
+                            "simhei.ttf", 30, encoding="utf-8")
+                        draw.text((x1, y1+i*40),
+                                result[i], (255, 255, 255), font=font)
+                        image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+                        # cv2.imshow('Camera', image)
+                        # cv2.waitKey(1)
+                a2 = time.time()
+            cv2.imshow('Camera', image)
+            cv2.waitKey(2)
 
-with mp_face_detection.FaceDetection(
-        model_selection=1, min_detection_confidence=0.5) as face_detection:
-    # 人脸识别，1为通用模型，0为近距离模型
-    while cap.isOpened():
-        a1 = time.time()
-        success, image = cap.read()
-        if not success:
-            print("Ignoring empty camera frame.")
-            continue
-        image.flags.writeable = False  # 据说这样写可以加速人脸识别推理
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        results = face_detection.process(image)
-        image.flags.writeable = True
-        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-        image2 = image.copy()  # copy复制，因为cv2会直接覆盖原有数组
-        if results.detections:
-            for detection in results.detections:
-                mp_drawing.draw_detection(image, detection)
-                image_rows, image_cols, _ = image.shape
-                location = detection.location_data.relative_bounding_box  # 获取人脸位置
-                start_point = mp_drawing._normalized_to_pixel_coordinates(
-                    location.xmin, location.ymin, image_cols, image_rows)  # 获取人脸左上角的点
-                end_point = mp_drawing._normalized_to_pixel_coordinates(
-                    location.xmin + location.width, location.ymin + location.height, image_cols, image_rows)  # 获取右下角的点
-                if start_point == None or end_point == None:
-                    break
-                x1, y1 = start_point  # 左上点坐标
-                x2, y2 = end_point  # 右下点坐标
-                # 为了营造相似环境，把左上角和右上角的点连线囊括的区域扩大提高准确度
-                img_infer = image2[y1-70:y2, x1-50:x2+50].copy()
-                img_infer = cv2_preprocess(img_infer)
-                result = result_inference(img_infer)
-                # cv2.imshow('test', img_infer)
-                # if cv2.waitKey(5) & 0xFF == 27:
-                #   break
-                for i in range(0, len(result)):
-                    # 将OpenCV图像从BGR转换为RGB
-                    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-                    image = Image.fromarray(image)
-                    draw = ImageDraw.Draw(image)
-                    font = ImageFont.truetype(
-                        "simhei.ttf", 30, encoding="utf-8")
-                    draw.text((x1, y1+i*40),
-                              result[i], (255, 255, 255), font=font)
-                    image = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-                    # cv2.imshow('Camera', image)
-                    # cv2.waitKey(1)
-            a2 = time.time()
-        cv2.imshow('Camera', image)
-        cv2.waitKey(2)
+            # out.write(image)
+            print(f'one pic time is {a2 - a1} s')
 
-        # out.write(image)
-        print(f'one pic time is {a2 - a1} s')
+if __name__=="__main__":
+    run()
