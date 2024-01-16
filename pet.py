@@ -161,8 +161,6 @@ class DemoWin(QMainWindow):
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
-        code = menu.addAction("代码")
-        py = menu.addAction("python—test")
         hide = menu.addAction("隐藏")
         quitAction = menu.addAction("退出")
         action = menu.exec_(self.mapToGlobal(event.pos()))
@@ -170,10 +168,6 @@ class DemoWin(QMainWindow):
             qApp.quit()
         if action == hide:
             self.setWindowOpacity(0)
-        if action == py:
-            os.startfile("python练习.bat")
-        if action == code:
-            os.startfile("代码.bat")
     '''退出程序'''
 
     def quit(self):
