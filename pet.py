@@ -215,7 +215,7 @@ class DemoWin(QMainWindow):
             self.label1.adjustSize()
             self.talk_condition = 0
 
-def run():
+def run(fuction):
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon("1.jpg"))
     # 创建一个主窗口
