@@ -28,7 +28,7 @@ class WorkerThread(QThread):
             # 模拟线程执行任务
             # time.sleep(0.1)
             if self.signalfuction:
-                value=self.signalfuction()
+                value=self.signalfuction[0].get_variable
                 if value!=None:
             # 发射信号，将一个随机值传递给槽函数
                     self.signal_with_tuple.emit(value)
@@ -94,7 +94,7 @@ class DemoWin(QMainWindow):
             for name in files:
                 if name.endswith(".gif"):
                     self.states.append(os.path.join(root, name))
-        self.worker_thread = WorkerThread(self.signalfuction[0].get_variable)
+        self.worker_thread = WorkerThread(self.signalfuction)
         self.worker_thread.signal_with_tuple.connect(self.fingerMovements)
         self.worker_thread.signal_finger_movements_done.connect(self.mouseReleaseEvent)
         self.worker_thread.start()
