@@ -12,7 +12,8 @@ class GestureRecognition:
         self.handConStyle = self.mpDraw.DrawingSpec(color=(0, 255, 0), thickness=7)
         self.pTime = 0
         self.cTime = 0
-        self.handsPoints = []
+        self.handsPoints = [(-1,-1)] * 42
+        # self.handsPoints = [(-1,-1)] * 42
         self.index_finger_landmarks = None
         self.index_finger_trajectory=None
         self.signalfuctin=signalfuctin
@@ -50,6 +51,7 @@ class GestureRecognition:
     def run(self):
         while True:
             ret, img = self.cap.read()
+            handsPoints  = [(-1,-1)] * 42
             if ret:
                 imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 result = self.hands.process(imgRGB)
@@ -57,26 +59,31 @@ class GestureRecognition:
                 imgHeight = img.shape[0]
                 imgWidth = img.shape[1]
                 if result.multi_hand_landmarks:
-                    for handLms in result.multi_hand_landmarks:
+                    # print("集合",(result.multi_hand_landmarks))
+                    # print((result.multi_handedness[0].classification[0].label))
+                    # print("左右手",result.multi_handedness)
+                    # print("multi_hand_landmarks",result.multi_hand_landmarks)
+                    for i,handLms in enumerate(result.multi_hand_landmarks):
                         self.mpDraw.draw_landmarks(
                             img, handLms, self.mpHands.HAND_CONNECTIONS, self.handLmsStyle, self.handConStyle)
-                        handsPoints  = []
-                        for i, lm in enumerate(handLms.landmark):
+                        for j, lm in enumerate(handLms.landmark):
                             xpos = int(lm.x * imgWidth)
                             ypos = int(lm.y * imgHeight)
-                            handsPoints.append((xpos, ypos))
-                            # cv2.putText(img, str(i), (xpos-25, ypos+5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0,0,255), 2)
-                            # if i==4:
-                            #     cv2.circle(img, (xpos, ypos), 10, (0,0,255), cv2.FILLED)
-                            # print(i, xpos, ypos)
-                        self.index_finger_trajectory=self.track_index_finger_movement(handsPoints)
-                        if self.detect_pinch_gesture(handsPoints):
-                            cv2.putText(img, "Pinch Gesture Detected", (30, 100),
-                                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
+                            # handsPoints.append((xpos, ypos))
+                            if(result.multi_handedness[i].classification[0].label == 'Right'):
+                                handsPoints[j]=(xpos, ypos)
+                            elif(result.multi_handedness[i].classification[0].label == 'Left'):
+                                handsPoints[j+21]=(xpos, ypos)
+                        
+                        # self.index_finger_trajectory=self.track_index_finger_movement(handsPoints)
+                    print('handsPoints:',handsPoints)
+                    print(len(handsPoints))
+            
+                        # if self.detect_pinch_gesture(handsPoints):
+                            # cv2.putText(img, "Pinch Gesture Detected", (30, 100),
+                                        # cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
                         # if self.signalfuctin and self.index_finger_trajectory!=(0,0):
                         #     self.signalfuctin(self.index_finger_trajectory)
-
-                
                 self.cTime = time.time()
                 fps = 1/(self.cTime-self.pTime)
                 self.pTime = self.cTime
@@ -84,7 +91,7 @@ class GestureRecognition:
                             cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
 
                 cv2.imshow('img', img)
-
+            print("handsPoints:",handsPoints)
             if cv2.waitKey(1) == ord('q'):
                 break
 
