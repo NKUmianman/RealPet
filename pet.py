@@ -215,8 +215,7 @@ class DemoWin(QMainWindow):
             self.label1.adjustSize()
             self.talk_condition = 0
 
-
-if __name__ == '__main__':
+def run():
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon("1.jpg"))
     # 创建一个主窗口
@@ -225,3 +224,7 @@ if __name__ == '__main__':
     mainWin.show()
     # 主循环
     sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    run()
