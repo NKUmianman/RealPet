@@ -4,7 +4,7 @@ from PyQt5.QtGui import QIcon, QMovie
 from threading import Thread
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QObject, Qt
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -16,9 +16,25 @@ os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = "Lib\site-packages\PyQt5\Qt\plugins"
 # 导入常用组件
 # 使用调色板等
 
-
+class WorkerThread(QThread):
+    # 定义一个信号，用于在线程中发射信号
+    signal_with_tuple = pyqtSignal(tuple)
+    def __init__(self,signalfuctin=None):
+        super().__init__()
+        self.signalfuction=signalfuctin
+    def run(self):
+        while True:
+            # 模拟线程执行任务
+            # time.sleep(0.1)
+            if self.signalfuction:
+                value=self.signalfuction()
+            # 发射信号，将一个随机值传递给槽函数
+                self.signal_with_tuple.emit(value)
+            else:
+                break
+        
 class DemoWin(QMainWindow):
-    def __init__(self):
+    def __init__(self,signalfuctin=None):
         super(DemoWin, self).__init__()
         self.initUI()
         # 初始化，不规则窗口
@@ -32,6 +48,7 @@ class DemoWin(QMainWindow):
         # 是否只是点击
         self.click = False
         self.move(1650, 20)
+        self.signalfuction=signalfuctin
         with open("data.txt", "r", encoding='utf8') as f:
             text = f.read()
             self.sentence = text.split("\n")
@@ -72,6 +89,9 @@ class DemoWin(QMainWindow):
             for name in files:
                 if name.endswith(".gif"):
                     self.states.append(os.path.join(root, name))
+        self.worker_thread = WorkerThread(self.signalfuction)
+        self.worker_thread.signal_with_tuple.connect(self.fingerMovements)
+        self.worker_thread.start()
 
     def initUI(self):
         # 将窗口设置为动图大小
@@ -125,6 +145,7 @@ class DemoWin(QMainWindow):
             # 开始播放动画
             self.movie.start()
             self.move(event.globalPos() - self.mouse_drag_pos)
+            print("鼠标移动：",event.globalPos() - self.mouse_drag_pos)
             event.accept()
     '''鼠标释放时, 取消绑定'''
 
@@ -214,12 +235,31 @@ class DemoWin(QMainWindow):
             self.label1.setText("")
             self.label1.adjustSize()
             self.talk_condition = 0
+    def fingerMovements(self,value):
+        print(f"Received signal from thread: {value}")
+            # 当左键按下且宠物跟随鼠标时
+        # if Qt.LeftButton and self.is_follow_mouse:
+            # 标记点击事件为非点击
+        self.click = False
+        # 更改宠物动画为被抚摸的动画
+        self.movie = QMovie("./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif")
+        # 设置宠物动画的大小
+        self.movie.setScaledSize(QSize(200, 200))
+        # 将动画添加到标签中
+        self.label.setMovie(self.movie)
+        # 开始播放动画
+        self.movie.start()
+        # 移动宠物到当前鼠标位置减去初始拖动位置的距离
+        self.move(self.pos().x()+value[0],self.pos().y()+value[1])
+        print("手指移动:",value[0],value[1])
+        
+        # self.mouseReleaseEvent(None)
 
-def run(fuction):
+def run(signalfuctin=None):
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon("1.jpg"))
     # 创建一个主窗口
-    mainWin = DemoWin()
+    mainWin = DemoWin(signalfuctin)
     # 显示
     mainWin.show()
     # 主循环

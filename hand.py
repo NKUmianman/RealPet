@@ -43,6 +43,7 @@ class GestureRecognition:
 
             # 处理移动向量（例如，打印或在你的应用程序中使用它）
             print("食指移动：", movement_vector)
+            self.signalfuctin(self.index_finger_trajectory)
             return movement_vector
         return (0,0)
     
@@ -72,8 +73,9 @@ class GestureRecognition:
                         if self.detect_pinch_gesture(handsPoints):
                             cv2.putText(img, "Pinch Gesture Detected", (30, 100),
                                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
-                            if self.signalfuctin:
-                                self.signalfuctin(self.index_finger_trajectory)
+                        # if self.signalfuctin and self.index_finger_trajectory!=(0,0):
+                        #     self.signalfuctin(self.index_finger_trajectory)
+
                 
                 self.cTime = time.time()
                 fps = 1/(self.cTime-self.pTime)
