@@ -29,6 +29,8 @@ class DemoWin(QMainWindow):
         self.repaint()
         # 是否跟随鼠标
         self.is_follow_mouse = False
+        # 是否只是点击
+        self.click = False
         self.move(1650, 20)
         with open("data.txt", "r", encoding='utf8') as f:
             text = f.read()
@@ -65,9 +67,11 @@ class DemoWin(QMainWindow):
         self.timer1.timeout.connect(self.talk)
         self.timer1.start(5000)
 
-        self.pet1 = []
-        for i in os.listdir("biu"):
-            self.pet1.append("biu/" + i)
+        self.states = []
+        for root, dirs, files in os.walk("./petGif/Default"):
+            for name in files:
+                if name.endswith(".gif"):
+                    self.states.append(os.path.join(root, name))
 
     def initUI(self):
         # 将窗口设置为动图大小
@@ -80,7 +84,7 @@ class DemoWin(QMainWindow):
         # label大小设置为动画大小
         self.label.setFixedSize(200, 200)
         # 设置动画路径
-        self.movie = QMovie("./biu/biu12.gif")
+        self.movie = QMovie("./petGif/Default/Nomal/2/2.gif")
         # 宠物大小
         self.movie.setScaledSize(QSize(200, 200))
         # 将动画添加到label中
@@ -97,10 +101,11 @@ class DemoWin(QMainWindow):
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.is_follow_mouse = True
+            self.click = True
             self.mouse_drag_pos = event.globalPos() - self.pos()
             event.accept()
             self.setCursor(QCursor(Qt.OpenHandCursor))
-            self.movie = QMovie("./biu/biu10.gif")
+            self.movie = QMovie("./petGif/Touch_Body/A_Happy/tb2/tb2.gif")
             # 宠物大小
             self.movie.setScaledSize(QSize(200, 200))
             # 将动画添加到label中
@@ -111,11 +116,28 @@ class DemoWin(QMainWindow):
 
     def mouseMoveEvent(self, event):
         if Qt.LeftButton and self.is_follow_mouse:
+            self.click = False
+            self.movie = QMovie("./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif")
+            # 宠物大小
+            self.movie.setScaledSize(QSize(200, 200))
+            # 将动画添加到label中
+            self.label.setMovie(self.movie)
+            # 开始播放动画
+            self.movie.start()
             self.move(event.globalPos() - self.mouse_drag_pos)
             event.accept()
     '''鼠标释放时, 取消绑定'''
 
     def mouseReleaseEvent(self, event):
+        if self.click == False:
+            # 设置动画路径
+            self.movie = QMovie("./petGif/Default/Nomal/2/2.gif")
+            # 宠物大小
+            self.movie.setScaledSize(QSize(200, 200))
+            # 将动画添加到label中
+            self.label.setMovie(self.movie)
+            # 开始播放动画
+            self.movie.start()
         self.is_follow_mouse = False
         self.setCursor(QCursor(Qt.ArrowCursor))
 
@@ -166,8 +188,8 @@ class DemoWin(QMainWindow):
     def randomAct(self):
         if not self.condition:
             print("状态变更")
-            print(random.choice(self.pet1))
-            self.movie = QMovie(random.choice(self.pet1))
+            print(random.choice(self.states))
+            self.movie = QMovie(random.choice(self.states))
             # 宠物大小
             self.movie.setScaledSize(QSize(200, 200))
             # 将动画添加到label中
@@ -178,7 +200,7 @@ class DemoWin(QMainWindow):
         else:
             print("状态还原")
             # 设置动画路径
-            self.movie = QMovie("./biu/biu12.gif")
+            self.movie = QMovie("./petGif/Default/Nomal/2/2.gif")
             # 宠物大小
             self.movie.setScaledSize(QSize(200, 200))
             # 将动画添加到label中
