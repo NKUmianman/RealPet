@@ -19,6 +19,7 @@ os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = "Lib\site-packages\PyQt5\Qt\plugins"
 class WorkerThread(QThread):
     # 定义一个信号，用于在线程中发射信号
     signal_with_tuple = pyqtSignal(tuple)
+    signal_finger_movements_done=pyqtSignal()
     def __init__(self,signalfuctin=None):
         super().__init__()
         self.signalfuction=signalfuctin
@@ -28,8 +29,12 @@ class WorkerThread(QThread):
             # time.sleep(0.1)
             if self.signalfuction:
                 value=self.signalfuction()
+                if value!=None:
             # 发射信号，将一个随机值传递给槽函数
-                self.signal_with_tuple.emit(value)
+                    self.signal_with_tuple.emit(value)
+                # self.signal_finger_movements_done.emit()
+                else:
+                    self.signal_finger_movements_done.emit()
             else:
                 break
         
@@ -91,6 +96,7 @@ class DemoWin(QMainWindow):
                     self.states.append(os.path.join(root, name))
         self.worker_thread = WorkerThread(self.signalfuction)
         self.worker_thread.signal_with_tuple.connect(self.fingerMovements)
+        self.worker_thread.signal_finger_movements_done.connect(self.mouseReleaseEvent)
         self.worker_thread.start()
 
     def initUI(self):
@@ -149,7 +155,7 @@ class DemoWin(QMainWindow):
             event.accept()
     '''鼠标释放时, 取消绑定'''
 
-    def mouseReleaseEvent(self, event):
+    def mouseReleaseEvent(self, event=None):
         if self.click == False:
             # 设置动画路径
             self.movie = QMovie("./petGif/Default/Nomal/2/2.gif")
@@ -253,7 +259,7 @@ class DemoWin(QMainWindow):
         self.move(self.pos().x()+value[0],self.pos().y()+value[1])
         print("手指移动:",value[0],value[1])
         
-        # self.mouseReleaseEvent(None)
+
 
 def run(signalfuctin=None):
     app = QApplication(sys.argv)
