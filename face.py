@@ -102,8 +102,8 @@ class FaceRecognition:
                 cv2.waitKey(2)
                 if self.signal_list:
                     # 设置非信号函数非阻塞检查
-                    self.signal_list[2].flag = True
-                    state = self.signal_list[2].get_variable()
+                    self.signal_list[1].flag = True
+                    state = self.signal_list[1].get_variable()
                     # print(state)
                     if state == True:
                         print("face线程退出")
