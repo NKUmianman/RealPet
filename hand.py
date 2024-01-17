@@ -44,16 +44,24 @@ class GestureRecognition:
 
             # 处理移动向量（例如，打印或在你的应用程序中使用它）
             print("食指移动：", movement_vector)
-            self.signalfuctin[0].set_variable(self.index_finger_trajectory)
-            self.signalflag=True
+            if self.signalfuctin:
+                self.signalfuctin[0].set_variable(self.index_finger_trajectory)
+                self.signalflag=True
             return movement_vector
         if self.signalflag==True:
-            self.signalfuctin[0].set_variable(None)
-            self.signalflag=False
+            if self.signalfuctin:
+                self.signalfuctin[0].set_variable(None)
+                self.signalflag=False
         return None
     
     def run(self):
         while True:
+            if self.signalfuctin:
+                self.signalfuctin[1].flag=True
+                state=self.signalfuctin[1].get_variable()
+                # print(state)
+                if state==True:
+                    break
             ret, img = self.cap.read()
             img = cv2.flip(img, 1)  # 1 for horizontal flip
             if ret:

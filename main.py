@@ -36,11 +36,11 @@ def facetask(shared_resource):
 
 if __name__=="__main__":
     index_finger_trajectory=SharedResource()
-    sample=SharedResource()
+    stop_program=SharedResource()
     # 创建线程对象
-    thread1 = threading.Thread(target=handtask,args=([index_finger_trajectory,sample],))
-    thread2 = threading.Thread(target=pettask,args=([index_finger_trajectory,sample],))
-    thread3 = threading.Thread(target=facetask,args=([sample],))
+    thread1 = threading.Thread(target=handtask,args=([index_finger_trajectory,stop_program],))
+    thread2 = threading.Thread(target=pettask,args=([index_finger_trajectory,stop_program],))
+    thread3 = threading.Thread(target=facetask,args=([stop_program],))
     # 启动线程
     thread1.start()
     thread2.start()
