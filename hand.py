@@ -102,6 +102,7 @@ class GestureRecognition:
             if cv2.waitKey(1) == ord('q'):
                 break
             if self.signalfuctin:
+                #设置非信号函数非阻塞检查
                 self.signalfuctin[1].flag=True
                 state=self.signalfuctin[1].get_variable()
                 # print(state)
