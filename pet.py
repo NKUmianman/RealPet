@@ -203,7 +203,7 @@ class DemoWin(QMainWindow):
 
     def quit(self):
         if self.signal_list:
-            self.signal_list[1].set_variable(True)
+            self.signal_list[0].set_variable(True)
             print("pet发起退出")
         self.close()
         qApp.quit()
