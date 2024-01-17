@@ -19,7 +19,7 @@ class FaceRecognition:
                                    "模糊的", "棕发", "浓眉", "圆胖", "双下巴", "眼镜", "山羊胡子", "灰白发", "浓妆", "高高的颧骨",
                                    "男性", "嘴巴张开", "胡子", "眯眯眼", "没有胡子", "鹅蛋脸", "白皮肤", "尖鼻子", "后退的发际线", "红润脸颊",
                                    "鬓角", "微笑", "直发", "卷发", "耳环", "帽子", "口红", "项链", "领带", "年轻"])  # 中文属性
-        self.signalfunctin = signal_list
+        self.signal_list = signal_list
         self.width = int(self.cap.get(cv2.cap_PROP_FRAME_WIDTH))  # 获取视频宽度
         self.height = int(self.cap.get(cv2.cap_PROP_FRAME_HEIGHT))  # 获取视频高度
         self.fps = self.cap.get(cv2.cap_PROP_FPS)  # 获取视频FPS，如果是实时摄像头请手动设定帧数
@@ -78,7 +78,7 @@ class FaceRecognition:
                         img_infer = image2[y1-70:y2, x1-50:x2+50].copy()
                         img_infer = self.cv2_preprocess(img_infer)
                         result = self.result_inference(img_infer)
-                        self.signalfunctin[0].set_variable(result)
+                        self.signal_list[0].set_variable(result)
                         # cv2.imshow('test', img_infer)
                         # if cv2.waitKey(5) & 0xFF == 27:
                         #   break
