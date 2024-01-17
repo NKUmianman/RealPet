@@ -30,7 +30,7 @@ class PinchingThread(QThread):
         while True:
             # 模拟线程执行任务
             if self.signal_list:
-                value = self.signal_list[0].get_variable()
+                value = self.signal_list[1].get_variable()
                 if value != None:
                     # 发射信号，将一个随机值传递给槽函数
                     self.signal_with_tuple.emit(value)
@@ -203,7 +203,7 @@ class DemoWin(QMainWindow):
 
     def quit(self):
         if self.signal_list:
-            self.signal_list[1].set_variable(True)
+            self.signal_list[0].set_variable(True)
             print("pet发起退出")
         self.close()
         qApp.quit()
