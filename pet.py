@@ -24,13 +24,13 @@ class PinchingThread(QThread):
 
     def __init__(self, signal_list=None):
         super().__init__()
-        self.signalfuction = signal_list
+        self.signal_list = signal_list
 
     def run(self):
         while True:
             # 模拟线程执行任务
-            if self.signalfuction:
-                value = self.signalfuction[0].get_variable()
+            if self.signal_list:
+                value = self.signal_list[0].get_variable()
                 if value != None:
                     # 发射信号，将一个随机值传递给槽函数
                     self.signal_with_tuple.emit(value)
@@ -56,7 +56,7 @@ class DemoWin(QMainWindow):
         # 是否只是点击
         self.click = False
         self.move(1650, 20)
-        self.signalfuction = signal_list
+        self.signal_list = signal_list
         with open("data.txt", "r", encoding='utf8') as f:
             text = f.read()
             self.sentence = text.split("\n")
@@ -97,7 +97,7 @@ class DemoWin(QMainWindow):
             for name in files:
                 if name.endswith(".gif"):
                     self.states.append(os.path.join(root, name))
-        self.pinchingThread = PinchingThread(self.signalfuction)
+        self.pinchingThread = PinchingThread(self.signal_list)
         self.pinchingThread.signal_with_tuple.connect(self.fingerMovements)
         self.pinchingThread.signal_finger_movements_done.connect(
             self.mouseReleaseEvent)
@@ -202,8 +202,8 @@ class DemoWin(QMainWindow):
     '''退出程序'''
 
     def quit(self):
-        if self.signalfuction:
-            self.signalfuction[1].set_variable(True)
+        if self.signal_list:
+            self.signal_list[1].set_variable(True)
             print("pet发起退出")
         self.close()
         qApp.quit()
