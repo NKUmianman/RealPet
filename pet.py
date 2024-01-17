@@ -31,18 +31,19 @@ class handThread(QThread):
     def run(self):
         while True:
             # 模拟线程执行任务
+            print('aaaaaaaaaaaaaaaaaaaaaaaaaaa')
             if self.signal_list:
                 movement = self.signal_list[1].get_variable()
                 bodytouch = self.signal_list[2].get_variable()
+                print('bodytouch:', bodytouch)
                 if movement != None:
                     # 发射信号，将一个随机值传递给槽函数
                     self.pinch_signal.emit(movement)
                 # self.pinch_down_signal.emit()
+                elif bodytouch:
+                    self.bodytouch_signal.emit()
                 else:
                     self.pinch_done_signal.emit()
-
-                if bodytouch:
-                    self.bodytouch_signal.emit()
             else:
                 break
 
@@ -62,7 +63,7 @@ class DemoWin(QMainWindow):
         # 是否只是点击
         self.click = False
         self.movieurl = "./petGif/Default/Nomal/2/2.gif"
-        self.move(1650, 20)
+        self.move(1700, 700)
         self.signal_list = signal_list
         with open("data.txt", "r", encoding='utf8') as f:
             text = f.read()
