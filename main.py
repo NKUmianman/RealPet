@@ -1,16 +1,20 @@
 import threading
 import pet
 import hand
+import face
+import cv2
+
+
 class SharedResource:
     def __init__(self):
-        self.flag=False
+        self.flag = False
         self.variable = None
         self.condition = threading.Condition()
 
     def set_variable(self, new_value):
         with self.condition:
             self.variable = new_value
-            self.flag=True
+            self.flag = True
             # 通知等待的线程，条件已经满足
             self.condition.notify()
 
@@ -19,27 +23,43 @@ class SharedResource:
             # 等待条件满足
             while self.flag is False:
                 self.condition.wait()
-            self.flag=False
+            self.flag = False
             return self.variable
 
+
 def handtask(shared_resource):
-    gest=hand.GestureRecognition(signalfuctin=shared_resource.set_variable)
+    gest = hand.GestureRecognition(signal_list=shared_resource)
     gest.run()
 
+
+def facetask(shared_resource):
+    feature = face.FaceRecognition(signal_list=shared_resource)
+    feature.run()
+
+
 def pettask(shared_resource):
-    pet.run(signalfuctin=shared_resource.get_variable)
-    
-index_finger_trajectory=SharedResource()
-# 创建线程对象
-thread1 = threading.Thread(target=handtask,args=(index_finger_trajectory,))
-thread2 = threading.Thread(target=pettask,args=(index_finger_trajectory,))
+    pet.run(signal_list=shared_resource)
 
-# 启动线程
-thread1.start()
-thread2.start()
 
-# 等待两个线程结束
-thread1.join()
-thread2.join()
+if __name__ == "__main__":
+    cap = cv2.VideoCapture(0)
+    index_finger_trajectory = SharedResource()
+    stop_program = SharedResource()
+    # 创建线程对象
+    hand_thread = threading.Thread(target=handtask, args=(
+        [cap, index_finger_trajectory, stop_program],))
+    face_thread = threading.Thread(target=facetask, args=([cap, stop_program],))
+    pet_thread = threading.Thread(target=pettask, args=(
+        [index_finger_trajectory, stop_program],))
+    # 启动线程
 
-print("Both threads have finished.")
+    face_thread.start()
+    hand_thread.start()
+    pet_thread.start()
+
+    # 等待两个线程结束
+    face_thread.join()
+    hand_thread.join()
+    pet_thread.join()
+
+    print("Both threads have finished.")
