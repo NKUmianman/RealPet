@@ -24,14 +24,14 @@ class SharedResource:
             return self.variable
 
 def handtask(shared_resource):
-    gest=hand.GestureRecognition(signalfuctin=shared_resource)
+    gest=hand.GestureRecognition(signal_list=shared_resource)
     gest.run()
 
 def pettask(shared_resource):
-    pet.run(signalfuctin=shared_resource)
+    pet.run(signal_list=shared_resource)
 
 def facetask(shared_resource):
-    face.run(signalfuctin=shared_resource)
+    face.run(signal_list=shared_resource)
     
 
 if __name__=="__main__":

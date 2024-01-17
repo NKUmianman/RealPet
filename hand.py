@@ -4,7 +4,7 @@ import time
 
 
 class GestureRecognition:
-    def __init__(self, signalfuctin=None):
+    def __init__(self, signal_list=None):
         self.cap = cv2.VideoCapture(0)
         self.mpHands = mp.solutions.hands
         self.hands = self.mpHands.Hands()
@@ -18,7 +18,7 @@ class GestureRecognition:
         self.handsPoints = []
         self.index_finger_landmarks = None
         self.index_finger_trajectory = None
-        self.signalfuctin = signalfuctin
+        self.signal_list = signal_list
         self.signalflag = False
 
     def detect_pinch_gesture(self, handLms):
@@ -48,13 +48,13 @@ class GestureRecognition:
 
             # 处理移动向量（例如，打印或在你的应用程序中使用它）
             print("食指移动：", movement_vector)
-            if self.signalfuctin:
-                self.signalfuctin[0].set_variable(self.index_finger_trajectory)
+            if self.signal_list:
+                self.signal_list[0].set_variable(self.index_finger_trajectory)
                 self.signalflag = True
             return movement_vector
         if self.signalflag == True:
-            if self.signalfuctin:
-                self.signalfuctin[0].set_variable(None)
+            if self.signal_list:
+                self.signal_list[0].set_variable(None)
                 self.signalflag = False
         return None
 
@@ -89,8 +89,8 @@ class GestureRecognition:
                         if self.detect_pinch_gesture(handsPoints):
                             cv2.putText(img, "Pinch Gesture Detected", (30, 100),
                                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
-                        # if self.signalfuctin and self.index_finger_trajectory!=(0,0):
-                        #     self.signalfuctin(self.index_finger_trajectory)
+                        # if self.signal_list and self.index_finger_trajectory!=(0,0):
+                        #     self.signal_list(self.index_finger_trajectory)
 
                 self.cTime = time.time()
                 fps = 1/(self.cTime-self.pTime)
@@ -101,10 +101,10 @@ class GestureRecognition:
 
             if cv2.waitKey(1) == ord('q'):
                 break
-            if self.signalfuctin:
+            if self.signal_list:
                 #设置非信号函数非阻塞检查
-                self.signalfuctin[1].flag=True
-                state=self.signalfuctin[1].get_variable()
+                self.signal_list[1].flag=True
+                state=self.signal_list[1].get_variable()
                 # print(state)
                 if state==True:
                     print("hand线程退出")

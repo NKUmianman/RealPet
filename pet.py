@@ -22,9 +22,9 @@ class PinchingThread(QThread):
     signal_with_tuple = pyqtSignal(tuple)
     signal_finger_movements_done = pyqtSignal()
 
-    def __init__(self, signalfuctin=None):
+    def __init__(self, signal_list=None):
         super().__init__()
-        self.signalfuction = signalfuctin
+        self.signalfuction = signal_list
 
     def run(self):
         while True:
@@ -42,7 +42,7 @@ class PinchingThread(QThread):
 
 
 class DemoWin(QMainWindow):
-    def __init__(self, signalfuctin=None):
+    def __init__(self, signal_list=None):
         super(DemoWin, self).__init__()
         self.initUI()
         # 初始化，不规则窗口
@@ -56,7 +56,7 @@ class DemoWin(QMainWindow):
         # 是否只是点击
         self.click = False
         self.move(1650, 20)
-        self.signalfuction = signalfuctin
+        self.signalfuction = signal_list
         with open("data.txt", "r", encoding='utf8') as f:
             text = f.read()
             self.sentence = text.split("\n")
@@ -271,11 +271,11 @@ class DemoWin(QMainWindow):
         print("手指移动:", value[0], value[1])
 
 
-def run(signalfuctin=None):
+def run(signal_list=None):
     app = QApplication(sys.argv)
     app.setWindowIcon(QIcon("1.jpg"))
     # 创建一个主窗口
-    mainWin = DemoWin(signalfuctin)
+    mainWin = DemoWin(signal_list)
     # 显示
     mainWin.show()
     # 主循环
