@@ -17,10 +17,11 @@ os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = "Lib\site-packages\PyQt5\Qt\plugins"
 # 使用调色板等
 
 
-class PinchingThread(QThread):
+class handThread(QThread):
     # 定义一个信号，用于在线程中发射信号
-    signal_with_tuple = pyqtSignal(tuple)
-    signal_finger_movements_done = pyqtSignal()
+    pinch_signal = pyqtSignal(tuple)
+    pinch_done_signal = pyqtSignal()
+    bodytouch_signal = pyqtSignal()
 
     def __init__(self, signal_list=None):
         super().__init__()
@@ -33,10 +34,10 @@ class PinchingThread(QThread):
                 value = self.signal_list[1].get_variable()
                 if value != None:
                     # 发射信号，将一个随机值传递给槽函数
-                    self.signal_with_tuple.emit(value)
-                # self.signal_finger_movements_done.emit()
+                    self.pinch_signal.emit(value)
+                # self.pinch_down_signal.emit()
                 else:
-                    self.signal_finger_movements_done.emit()
+                    self.pinch_done_signal.emit()
             else:
                 break
 
@@ -97,11 +98,11 @@ class DemoWin(QMainWindow):
             for name in files:
                 if name.endswith(".gif"):
                     self.states.append(os.path.join(root, name))
-        self.pinchingThread = PinchingThread(self.signal_list)
-        self.pinchingThread.signal_with_tuple.connect(self.fingerMovements)
-        self.pinchingThread.signal_finger_movements_done.connect(
+        self.handThread = handThread(self.signal_list)
+        self.handThread.pinch_signal.connect(self.fingerMovements)
+        self.handThread.pinch_done_signal.connect(
             self.mouseReleaseEvent)
-        self.pinchingThread.start()
+        self.handThread.start()
 
     def initUI(self):
         # 将窗口设置为动图大小
