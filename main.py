@@ -2,6 +2,7 @@ import threading
 import pet
 import hand
 import face
+import cv2
 
 
 class SharedResource:
@@ -32,8 +33,8 @@ def handtask(shared_resource):
 
 
 def facetask(shared_resource):
-    face = face.FaceRecognition(signal_list=shared_resource)
-    face.run()
+    feature = face.FaceRecognition(signal_list=shared_resource)
+    feature.run()
 
 
 def pettask(shared_resource):
@@ -41,14 +42,15 @@ def pettask(shared_resource):
 
 
 if __name__ == "__main__":
+    cap = cv2.VideoCapture(0)
     index_finger_trajectory = SharedResource()
     stop_program = SharedResource()
     # 创建线程对象
     hand_thread = threading.Thread(target=handtask, args=(
-        [index_finger_trajectory, stop_program],))
+        [cap, index_finger_trajectory, stop_program],))
+    face_thread = threading.Thread(target=facetask, args=([cap, stop_program],))
     pet_thread = threading.Thread(target=pettask, args=(
         [index_finger_trajectory, stop_program],))
-    face_thread = threading.Thread(target=facetask, args=([stop_program],))
     # 启动线程
 
     face_thread.start()

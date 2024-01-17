@@ -5,7 +5,7 @@ import time
 
 class GestureRecognition:
     def __init__(self, signal_list=None):
-        self.cap = cv2.VideoCapture(0)
+        self.cap = signal_list[0]
         self.mpHands = mp.solutions.hands
         self.hands = self.mpHands.Hands()
         self.mpDraw = mp.solutions.drawing_utils
@@ -49,12 +49,12 @@ class GestureRecognition:
             # 处理移动向量（例如，打印或在你的应用程序中使用它）
             print("食指移动：", movement_vector)
             if self.signal_list:
-                self.signal_list[0].set_variable(self.index_finger_trajectory)
+                self.signal_list[1].set_variable(self.index_finger_trajectory)
                 self.signalflag = True
             return movement_vector
         if self.signalflag == True:
             if self.signal_list:
-                self.signal_list[0].set_variable(None)
+                self.signal_list[1].set_variable(None)
                 self.signalflag = False
         return None
 
@@ -102,11 +102,11 @@ class GestureRecognition:
             if cv2.waitKey(1) == ord('q'):
                 break
             if self.signal_list:
-                #设置非信号函数非阻塞检查
-                self.signal_list[1].flag=True
-                state=self.signal_list[1].get_variable()
+                # 设置非信号函数非阻塞检查
+                self.signal_list[2].flag = True
+                state = self.signal_list[2].get_variable()
                 # print(state)
-                if state==True:
+                if state == True:
                     print("hand线程退出")
                     break
 

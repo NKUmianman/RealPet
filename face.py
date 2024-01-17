@@ -12,7 +12,7 @@ class FaceRecognition:
         self.mp_face_detection = mp.solutions.face_detection
         self.mp_drawing = mp.solutions.drawing_utils
         # 视频输入，如果需要摄像头，请改成数字0，并修改下面的break为continue
-        self.cap = cv2.VideoCapture(0)
+        self.cap = signal_list[0]
         self.ort_session = onnxruntime.InferenceSession(
             "cpu.onnx", providers=['CPUExecutionProvider'])
         self.list_attr = np.array(["不明显的胡子", "拱形眉毛", "有吸引力的", "眼袋", "秃头", "刘海", "大嘴唇", "大鼻子", "黑发", "金发",
@@ -21,9 +21,9 @@ class FaceRecognition:
                                    "鬓角", "微笑", "直发", "卷发", "耳环", "帽子", "口红", "项链", "领带", "年轻"])  # 中文属性
 
         self.signal_list = signal_list
-        self.width = int(self.cap.get(cv2.cap_PROP_FRAME_WIDTH))  # 获取视频宽度
-        self.height = int(self.cap.get(cv2.cap_PROP_FRAME_HEIGHT))  # 获取视频高度
-        self.fps = self.cap.get(cv2.cap_PROP_FPS)  # 获取视频FPS，如果是实时摄像头请手动设定帧数
+        self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))  # 获取视频宽度
+        self.height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))  # 获取视频高度
+        self.fps = self.cap.get(cv2.CAP_PROP_FPS)  # 获取视频FPS，如果是实时摄像头请手动设定帧数
 
     def cv2_preprocess(self, img):  # numpy预处理和torch处理一样
         img = cv2.resize(img, (128, 128), interpolation=cv2.INTER_NEAREST)
@@ -79,7 +79,7 @@ class FaceRecognition:
                         img_infer = image2[y1-70:y2, x1-50:x2+50].copy()
                         img_infer = self.cv2_preprocess(img_infer)
                         result = self.result_inference(img_infer)
-                        self.signal_list[0].set_variable(result)
+                        print(result)
                         # cv2.imshow('test', img_infer)
                         # if cv2.waitKey(5) & 0xFF == 27:
                         #   break
@@ -97,8 +97,8 @@ class FaceRecognition:
                             # cv2.imshow('Camera', image)
                             # cv2.waitKey(1)
                     a2 = time.time()
-                cv2.imshow('Camera', image)
+                # cv2.imshow('Camera', image)
                 cv2.waitKey(2)
 
                 # out.write(image)
-                print(f'one pic time is {a2 - a1} s')
+                # print(f'one pic time is {a2 - a1} s')
