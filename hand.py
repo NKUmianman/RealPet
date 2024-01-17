@@ -15,10 +15,10 @@ class GestureRecognition:
             color=(0, 255, 0), thickness=7)
         self.pTime = 0
         self.cTime = 0
-        self.handsPoints = [(-1,-1)] * 42
+        self.handsPoints = [(-1, -1)] * 42
         # self.handsPoints = [(-1,-1)] * 42
         self.index_finger_landmarks = None
-        self.index_finger_trajectory = None
+        self.crawl = None
         self.signal_list = signal_list
         self.signalflag = False
 
@@ -50,19 +50,41 @@ class GestureRecognition:
             # 处理移动向量（例如，打印或在你的应用程序中使用它）
             print("食指移动：", movement_vector)
             if self.signal_list:
-                self.signal_list[1].set_variable(self.index_finger_trajectory)
+                self.signal_list[2].set_variable(self.crawl)
                 self.signalflag = True
             return movement_vector
         if self.signalflag == True:
             if self.signal_list:
-                self.signal_list[1].set_variable(None)
+                self.signal_list[2].set_variable(None)
                 self.signalflag = False
         return None
+
+    def detect_touch_gesture(self, handLms):
+        root = handLms[0]  # 手掌根部
+        thumb_tip = handLms[4]  # 拇指指尖
+        middle_tip = handLms[12]  # 中指指尖
+        ring_tip = handLms[16]  # 无名指指尖
+        pinky_tip = handLms[20]  # 小指指尖
+
+        distances = [((tip[0] - root[0])**2 +
+                      (tip[1] - root[1])**2)**0.5 for tip in (thumb_tip, middle_tip, ring_tip, pinky_tip)]
+
+        # 设置手势的阈值，根据需要进行调整
+        fingers_threshold = 70  # 其他指头并拢的距离阈值
+
+        # 食指指尖距离摄像头够近，并且其他指头都在一定距离内
+        if distances[0] < fingers_threshold and \
+                distances[1] < fingers_threshold and \
+                distances[2] < fingers_threshold and \
+                distances[3] < fingers_threshold:
+            return True
+        else:
+            return False
 
     def run(self):
         while True:
             ret, img = self.cap.read()
-            handsPoints  = [(-1,-1)] * 21
+            handsPoints = [(-1, -1)] * 21
             img = cv2.flip(img, 1)  # 1 for horizontal flip
             if ret:
                 imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -74,42 +96,42 @@ class GestureRecognition:
                 if result.multi_hand_landmarks:
                     # print("集合",(result.multi_hand_landmarks))
                     # print((result.multi_handedness[0].classification[0].label))
-                    print("左右手",result.multi_handedness)
+                    print("左右手", result.multi_handedness)
                     # print("multi_hand_landmarks",result.multi_hand_landmarks)
                     if (len(result.multi_hand_landmarks) == 1):
-                        handsPoints = [(-1,-1)] * 21
-                        for i,handLms in enumerate(result.multi_hand_landmarks):
+                        handsPoints = [(-1, -1)] * 21
+                        for i, handLms in enumerate(result.multi_hand_landmarks):
                             self.mpDraw.draw_landmarks(
                                 img, handLms, self.mpHands.HAND_CONNECTIONS, self.handLmsStyle, self.handConStyle)
                             for j, lm in enumerate(handLms.landmark):
                                 xpos = int(lm.x * imgWidth)
                                 ypos = int(lm.y * imgHeight)
                                 # handsPoints.append((xpos, ypos))
-                                handsPoints[j]=(xpos, ypos)
+                                handsPoints[j] = (xpos, ypos)
                     elif (len(result.multi_hand_landmarks) == 2):
-                            handsPoints = [(-1,-1)] * 42
-                            for i,handLms in enumerate(result.multi_hand_landmarks):
-                                self.mpDraw.draw_landmarks(
+                        handsPoints = [(-1, -1)] * 42
+                        for i, handLms in enumerate(result.multi_hand_landmarks):
+                            self.mpDraw.draw_landmarks(
                                 img, handLms, self.mpHands.HAND_CONNECTIONS, self.handLmsStyle, self.handConStyle)
-                                for j, lm in enumerate(handLms.landmark):
-                                    xpos = int(lm.x * imgWidth)
-                                    ypos = int(lm.y * imgHeight)
-                                    # handsPoints.append((xpos, ypos))
-                                    if(result.multi_handedness[i].classification[0].label == 'Right'):
-                                        print("LEFT")
-                                        handsPoints[j] = (xpos, ypos)
-                                    elif(result.multi_handedness[i].classification[0].label == 'Left'):
-                                        print("Right")
-                                        handsPoints[j+21] = (xpos, ypos)
-                        # self.index_finger_trajectory=self.track_index_finger_movement(handsPoints)
-                    print('handsPoints:',handsPoints)
+                            for j, lm in enumerate(handLms.landmark):
+                                xpos = int(lm.x * imgWidth)
+                                ypos = int(lm.y * imgHeight)
+                                # handsPoints.append((xpos, ypos))
+                                if (result.multi_handedness[i].classification[0].label == 'Right'):
+                                    print("LEFT")
+                                    handsPoints[j] = (xpos, ypos)
+                                elif (result.multi_handedness[i].classification[0].label == 'Left'):
+                                    print("Right")
+                                    handsPoints[j+21] = (xpos, ypos)
+                        # self.crawl=self.track_index_finger_movement(handsPoints)
+                    print('handsPoints:', handsPoints)
                     print(len(handsPoints))
-            
-                        # if self.detect_pinch_gesture(handsPoints):
-                            # cv2.putText(img, "Pinch Gesture Detected", (30, 100),
-                                        # cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
-                        # if self.signalfuctin and self.index_finger_trajectory!=(0,0):
-                        #     self.signalfuctin(self.index_finger_trajectory)
+
+                    # if self.detect_pinch_gesture(handsPoints):
+                    # cv2.putText(img, "Pinch Gesture Detected", (30, 100),
+                    # cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
+                    # if self.signalfuctin and self.crawl!=(0,0):
+                    #     self.signalfuctin(self.crawl)
                     for handLms in result.multi_hand_landmarks:
                         self.mpDraw.draw_landmarks(
                             img, handLms, self.mpHands.HAND_CONNECTIONS, self.handLmsStyle, self.handConStyle)
@@ -123,14 +145,18 @@ class GestureRecognition:
                             # if i==4:
                             #     cv2.circle(img, (xpos, ypos), 10, (0,0,255), cv2.FILLED)
                             # print(i, xpos, ypos)
-                        self.index_finger_trajectory = self.track_index_finger_movement(
+                        self.crawl = self.track_index_finger_movement(
                             handsPoints)
 
                         if self.detect_pinch_gesture(handsPoints):
                             cv2.putText(img, "Pinch Gesture Detected", (30, 100),
                                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
-                        # if self.signal_list and self.index_finger_trajectory!=(0,0):
-                        #     self.signal_list(self.index_finger_trajectory)
+
+                        if self.detect_touch_gesture(handsPoints):
+                            cv2.putText(img, "Touch Gesture Detected", (30, 100),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
+                        # if self.signal_list and self.crawl!=(0,0):
+                        #     self.signal_list(self.crawl)
 
                 self.cTime = time.time()
                 fps = 1/(self.cTime-self.pTime)
@@ -143,8 +169,8 @@ class GestureRecognition:
                 break
             if self.signal_list:
                 # 设置非信号函数非阻塞检查
-                self.signal_list[2].flag = True
-                state = self.signal_list[2].get_variable()
+                self.signal_list[1].flag = True
+                state = self.signal_list[1].get_variable()
                 # print(state)
                 if state == True:
                     print("hand线程退出")
