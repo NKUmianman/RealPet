@@ -40,6 +40,7 @@ def pettask(shared_resource):
     pet.run(signalfuctin=shared_resource)
 
 
+
 if __name__ == "__main__":
     index_finger_trajectory = SharedResource()
     sample = SharedResource()
@@ -49,6 +50,7 @@ if __name__ == "__main__":
     face_thread = threading.Thread(target=facetask, args=([sample],))
     pet_thread = threading.Thread(target=pettask, args=(
         [index_finger_trajectory, sample],))
+
     # 启动线程
     hand_thread.start()
     pet_thread.start()
