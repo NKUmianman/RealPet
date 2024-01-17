@@ -25,12 +25,11 @@ class WorkerThread(QThread):
         self.signalfuction=signalfuctin
     def run(self):
         while True:
-            # 模拟线程执行任务
+
             # time.sleep(0.1)
             if self.signalfuction:
                 value=self.signalfuction[0].get_variable()
                 if value!=None:
-            # 发射信号，将一个随机值传递给槽函数
                     self.signal_with_tuple.emit(value)
                 # self.signal_finger_movements_done.emit()
                 else:
