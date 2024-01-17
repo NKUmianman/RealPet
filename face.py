@@ -12,7 +12,7 @@ class FaceRecognition:
         self.mp_face_detection = mp.solutions.face_detection
         self.mp_drawing = mp.solutions.drawing_utils
         # 视频输入，如果需要摄像头，请改成数字0，并修改下面的break为continue
-        self.cap = cv2.Videoself.capture(0)
+        self.cap = cv2.VideoCapture(0)
         self.ort_session = onnxruntime.InferenceSession(
             "cpu.onnx", providers=['CPUExecutionProvider'])
         self.list_attr = np.array(["不明显的胡子", "拱形眉毛", "有吸引力的", "眼袋", "秃头", "刘海", "大嘴唇", "大鼻子", "黑发", "金发",
@@ -20,9 +20,9 @@ class FaceRecognition:
                                    "男性", "嘴巴张开", "胡子", "眯眯眼", "没有胡子", "鹅蛋脸", "白皮肤", "尖鼻子", "后退的发际线", "红润脸颊",
                                    "鬓角", "微笑", "直发", "卷发", "耳环", "帽子", "口红", "项链", "领带", "年轻"])  # 中文属性
         self.signalfunctin = signalfuctin
-        self.width = int(self.cap.get(cv2.cap_PROP_FRAME_WIDTH))  # 获取视频宽度
-        self.height = int(self.cap.get(cv2.cap_PROP_FRAME_HEIGHT))  # 获取视频高度
-        self.fps = self.cap.get(cv2.cap_PROP_FPS)  # 获取视频FPS，如果是实时摄像头请手动设定帧数
+        self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))  # 获取视频宽度
+        self.height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))  # 获取视频高度
+        self.fps = self.cap.get(cv2.CAP_PROP_FPS)  # 获取视频FPS，如果是实时摄像头请手动设定帧数
 
     def cv2_preprocess(self, img):  # numpy预处理和torch处理一样
         img = cv2.resize(img, (128, 128), interpolation=cv2.INTER_NEAREST)
