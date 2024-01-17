@@ -99,6 +99,12 @@ class GestureRecognition:
 
             if cv2.waitKey(1) == ord('q'):
                 break
+            if self.signalfuctin:
+                self.signalfuctin[1].flag=True
+                state=self.signalfuctin[1].get_variable()
+                # print(state)
+                if state==True:
+                    break
 
 
 if __name__ == "__main__":
