@@ -47,15 +47,15 @@ if __name__ == "__main__":
         [index_finger_trajectory, stop_program],))
     pet_thread = threading.Thread(target=pettask, args=(
         [index_finger_trajectory, stop_program],))
-    # face_thread = threading.Thread(target=facetask,args=([stop_program],))
+    face_thread = threading.Thread(target=facetask, args=([stop_program],))
     # 启动线程
 
-    # face_thread.start()
+    face_thread.start()
     hand_thread.start()
     pet_thread.start()
 
     # 等待两个线程结束
-    # face_thread.join()
+    face_thread.join()
     hand_thread.join()
     pet_thread.join()
 
