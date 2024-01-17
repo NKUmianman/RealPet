@@ -197,6 +197,9 @@ class DemoWin(QMainWindow):
         quitAction = menu.addAction("退出")
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action == quitAction:
+            if self.signalfuction:
+                self.signalfuction[1].set_variable(True)
+                print("设置退出")
             qApp.quit()
         if action == hide:
             self.setWindowOpacity(0)
