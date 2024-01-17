@@ -56,6 +56,7 @@ class DemoWin(QMainWindow):
         self.is_follow_mouse = False
         # 是否只是点击
         self.click = False
+        self.movieurl = "./petGif/Default/Nomal/2/2.gif"
         self.move(1650, 20)
         self.signal_list = signal_list
         with open("data.txt", "r", encoding='utf8') as f:
@@ -148,13 +149,13 @@ class DemoWin(QMainWindow):
     def mouseMoveEvent(self, event):
         if Qt.LeftButton and self.is_follow_mouse:
             self.click = False
-            self.movie = QMovie("./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif")
-            # 宠物大小
-            self.movie.setScaledSize(QSize(200, 200))
-            # 将动画添加到label中
-            self.label.setMovie(self.movie)
-            # 开始播放动画
-            self.movie.start()
+            if self.movieurl != "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif":
+                self.movie = QMovie(
+                    "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif")
+                self.movieurl = "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif"
+                self.movie.setScaledSize(QSize(200, 200))
+                self.label.setMovie(self.movie)
+                self.movie.start()
             self.move(event.globalPos() - self.mouse_drag_pos)
             print("鼠标移动：", event.globalPos() - self.mouse_drag_pos)
             event.accept()
@@ -259,14 +260,13 @@ class DemoWin(QMainWindow):
         # 标记点击事件为非点击
         self.click = False
         self.is_follow_mouse = True
-        # 更改宠物动画为被抚摸的动画
-        self.movie = QMovie("./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif")
-        # 设置宠物动画的大小
-        self.movie.setScaledSize(QSize(200, 200))
-        # 将动画添加到标签中
-        self.label.setMovie(self.movie)
-        # 开始播放动画
-        self.movie.start()
+        if self.movieurl != "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif":
+            self.movie = QMovie(
+                "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif")
+            self.movieurl = "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif"
+            self.movie.setScaledSize(QSize(200, 200))
+            self.label.setMovie(self.movie)
+            self.movie.start()
         # 移动宠物到当前鼠标位置减去初始拖动位置的距离
         self.move(self.pos().x()+value[0], self.pos().y()+value[1])
         print("手指移动:", value[0], value[1])
