@@ -44,16 +44,16 @@ def pettask(shared_resource):
 if __name__ == "__main__":
     cap = cv2.VideoCapture(0)
     face_feature = SharedResource()
-    crawl = SharedResource()
+    pinch = SharedResource()
     bodytouch = SharedResource()
     stop_program = SharedResource()
     # 创建线程对象
     hand_thread = threading.Thread(target=handtask, args=(
-        [cap, stop_program, bodytouch, crawl],))
+        [cap, stop_program, pinch, bodytouch],))
     face_thread = threading.Thread(
         target=facetask, args=([cap, stop_program, face_feature],))
     pet_thread = threading.Thread(target=pettask, args=(
-        [stop_program, crawl, bodytouch, face_feature],))
+        [stop_program, pinch, bodytouch, face_feature],))
     # 启动线程
 
     face_thread.start()
