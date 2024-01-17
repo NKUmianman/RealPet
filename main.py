@@ -40,7 +40,7 @@ if __name__=="__main__":
     # 创建线程对象
     thread1 = threading.Thread(target=handtask,args=([index_finger_trajectory,stop_program],))
     thread2 = threading.Thread(target=pettask,args=([index_finger_trajectory,stop_program],))
-    thread3 = threading.Thread(target=facetask,args=([stop_program],))
+    # thread3 = threading.Thread(target=facetask,args=([stop_program],))
     # 启动线程
     thread1.start()
     thread2.start()

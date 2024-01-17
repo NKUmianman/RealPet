@@ -29,7 +29,6 @@ class PinchingThread(QThread):
     def run(self):
         while True:
             # 模拟线程执行任务
-            # time.sleep(0.1)
             if self.signalfuction:
                 value = self.signalfuction[0].get_variable()
                 if value != None:
@@ -194,9 +193,9 @@ class DemoWin(QMainWindow):
     def contextMenuEvent(self, event):
         menu = QMenu(self)
         hide = menu.addAction("隐藏")
-        quit = menu.addAction("退出")
+        quitAction = menu.addAction("退出")
         action = menu.exec_(self.mapToGlobal(event.pos()))
-        if action == quit:
+        if action == quitAction:
             self.quit()
         if action == hide:
             self.setWindowOpacity(0)
@@ -205,9 +204,10 @@ class DemoWin(QMainWindow):
     def quit(self):
         if self.signalfuction:
             self.signalfuction[1].set_variable(True)
-            print("退出程序")
+            print("pet发起退出")
         self.close()
-        sys.exit()
+        qApp.quit()
+        # sys.exit()
     '''显示'''
 
     def showwin(self):

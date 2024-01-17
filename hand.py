@@ -106,6 +106,7 @@ class GestureRecognition:
                 state=self.signalfuctin[1].get_variable()
                 # print(state)
                 if state==True:
+                    print("hand线程退出")
                     break
 
 
