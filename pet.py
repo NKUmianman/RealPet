@@ -199,7 +199,7 @@ class DemoWin(QMainWindow):
         if action == quitAction:
             if self.signalfuction:
                 self.signalfuction[1].set_variable(True)
-                print("设置退出")
+                print("退出程序")
             qApp.quit()
         if action == hide:
             self.setWindowOpacity(0)
