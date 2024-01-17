@@ -31,12 +31,13 @@ def handtask(shared_resource):
     gest.run()
 
 
+def facetask(shared_resource):
+    face = face.FaceRecognition(signal_list=shared_resource)
+    face.run()
+
+
 def pettask(shared_resource):
     pet.run(signal_list=shared_resource)
-
-
-def facetask(shared_resource):
-    face.run(signal_list=shared_resource)
 
 
 if __name__ == "__main__":
