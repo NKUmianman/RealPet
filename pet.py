@@ -17,9 +17,10 @@ os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = "Lib\site-packages\PyQt5\Qt\plugins"
 # 使用调色板等
 
 
-class WorkerThread(QThread):
+class PinchingThread(QThread):
     # 定义一个信号，用于在线程中发射信号
     signal_with_tuple = pyqtSignal(tuple)
+    signal_finger_movements_done = pyqtSignal()
 
     def __init__(self, signalfuctin=None):
         super().__init__()
@@ -30,9 +31,13 @@ class WorkerThread(QThread):
             # 模拟线程执行任务
             # time.sleep(0.1)
             if self.signalfuction:
-                value = self.signalfuction()
-            # 发射信号，将一个随机值传递给槽函数
-                self.signal_with_tuple.emit(value)
+                value = self.signalfuction[0].get_variable()
+                if value != None:
+                    # 发射信号，将一个随机值传递给槽函数
+                    self.signal_with_tuple.emit(value)
+                # self.signal_finger_movements_done.emit()
+                else:
+                    self.signal_finger_movements_done.emit()
             else:
                 break
 
@@ -93,9 +98,11 @@ class DemoWin(QMainWindow):
             for name in files:
                 if name.endswith(".gif"):
                     self.states.append(os.path.join(root, name))
-        self.worker_thread = WorkerThread(self.signalfuction)
-        self.worker_thread.signal_with_tuple.connect(self.fingerMovements)
-        self.worker_thread.start()
+        self.pinchingThread = PinchingThread(self.signalfuction)
+        self.pinchingThread.signal_with_tuple.connect(self.fingerMovements)
+        self.pinchingThread.signal_finger_movements_done.connect(
+            self.mouseReleaseEvent)
+        self.pinchingThread.start()
 
     def initUI(self):
         # 将窗口设置为动图大小
@@ -153,7 +160,7 @@ class DemoWin(QMainWindow):
             event.accept()
     '''鼠标释放时, 取消绑定'''
 
-    def mouseReleaseEvent(self, event):
+    def mouseReleaseEvent(self, event=None):
         if self.click == False:
             # 设置动画路径
             self.movie = QMovie("./petGif/Default/Nomal/2/2.gif")
@@ -205,28 +212,29 @@ class DemoWin(QMainWindow):
     '''随机做一个动作'''
 
     def randomAct(self):
-        if not self.condition:
-            print("状态变更")
-            print(random.choice(self.states))
-            self.movie = QMovie(random.choice(self.states))
-            # 宠物大小
-            self.movie.setScaledSize(QSize(200, 200))
-            # 将动画添加到label中
-            self.label.setMovie(self.movie)
-            # 开始播放动画
-            self.movie.start()
-            self.condition = 1
-        else:
-            print("状态还原")
-            # 设置动画路径
-            self.movie = QMovie("./petGif/Default/Nomal/2/2.gif")
-            # 宠物大小
-            self.movie.setScaledSize(QSize(200, 200))
-            # 将动画添加到label中
-            self.label.setMovie(self.movie)
-            # 开始播放动画
-            self.movie.start()
-            self.condition = 0
+        if self.is_follow_mouse == False:
+            if not self.condition:
+                print("状态变更")
+                print(random.choice(self.states))
+                self.movie = QMovie(random.choice(self.states))
+                # 宠物大小
+                self.movie.setScaledSize(QSize(200, 200))
+                # 将动画添加到label中
+                self.label.setMovie(self.movie)
+                # 开始播放动画
+                self.movie.start()
+                self.condition = 1
+            else:
+                print("状态还原")
+                # 设置动画路径
+                self.movie = QMovie("./petGif/Default/Nomal/2/2.gif")
+                # 宠物大小
+                self.movie.setScaledSize(QSize(200, 200))
+                # 将动画添加到label中
+                self.label.setMovie(self.movie)
+                # 开始播放动画
+                self.movie.start()
+                self.condition = 0
 
     def talk(self):
         if not self.talk_condition:
@@ -246,6 +254,7 @@ class DemoWin(QMainWindow):
         # if Qt.LeftButton and self.is_follow_mouse:
         # 标记点击事件为非点击
         self.click = False
+        self.is_follow_mouse = True
         # 更改宠物动画为被抚摸的动画
         self.movie = QMovie("./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif")
         # 设置宠物动画的大小
@@ -257,8 +266,6 @@ class DemoWin(QMainWindow):
         # 移动宠物到当前鼠标位置减去初始拖动位置的距离
         self.move(self.pos().x()+value[0], self.pos().y()+value[1])
         print("手指移动:", value[0], value[1])
-
-        # self.mouseReleaseEvent(None)
 
 
 def run(signalfuctin=None):
