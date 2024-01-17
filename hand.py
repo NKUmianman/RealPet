@@ -56,12 +56,6 @@ class GestureRecognition:
     
     def run(self):
         while True:
-            if self.signalfuctin:
-                self.signalfuctin[1].flag=True
-                state=self.signalfuctin[1].get_variable()
-                # print(state)
-                if state==True:
-                    break
             ret, img = self.cap.read()
             img = cv2.flip(img, 1)  # 1 for horizontal flip
             if ret:
@@ -102,6 +96,12 @@ class GestureRecognition:
 
             if cv2.waitKey(1) == ord('q'):
                 break
+            if self.signalfuctin:
+                self.signalfuctin[1].flag=True
+                state=self.signalfuctin[1].get_variable()
+                # print(state)
+                if state==True:
+                    break
 
 if __name__=="__main__":
     gest=GestureRecognition()
