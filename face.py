@@ -79,7 +79,7 @@ class FaceRecognition:
                         img_infer = image2[y1-70:y2, x1-50:x2+50].copy()
                         img_infer = self.cv2_preprocess(img_infer)
                         result = self.result_inference(img_infer)
-                        self.signal_list[1].set_variable(result)
+                        self.signal_list[2].set_variable(result)
                         # print(result)
                         # cv2.imshow('test', img_infer)
                         # if cv2.waitKey(5) & 0xFF == 27:
