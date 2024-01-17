@@ -51,7 +51,7 @@ class GestureRecognition:
     def run(self):
         while True:
             ret, img = self.cap.read()
-            handsPoints  = [(-1,-1)] * 42
+            handsPoints  = [(-1,-1)] * 21
             if ret:
                 imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 result = self.hands.process(imgRGB)
@@ -61,20 +61,33 @@ class GestureRecognition:
                 if result.multi_hand_landmarks:
                     # print("集合",(result.multi_hand_landmarks))
                     # print((result.multi_handedness[0].classification[0].label))
-                    # print("左右手",result.multi_handedness)
+                    print("左右手",result.multi_handedness)
                     # print("multi_hand_landmarks",result.multi_hand_landmarks)
-                    for i,handLms in enumerate(result.multi_hand_landmarks):
-                        self.mpDraw.draw_landmarks(
-                            img, handLms, self.mpHands.HAND_CONNECTIONS, self.handLmsStyle, self.handConStyle)
-                        for j, lm in enumerate(handLms.landmark):
-                            xpos = int(lm.x * imgWidth)
-                            ypos = int(lm.y * imgHeight)
-                            # handsPoints.append((xpos, ypos))
-                            if(result.multi_handedness[i].classification[0].label == 'Right'):
+                    if (len(result.multi_hand_landmarks) == 1):
+                        handsPoints = [(-1,-1)] * 21
+                        for i,handLms in enumerate(result.multi_hand_landmarks):
+                            self.mpDraw.draw_landmarks(
+                                img, handLms, self.mpHands.HAND_CONNECTIONS, self.handLmsStyle, self.handConStyle)
+                            for j, lm in enumerate(handLms.landmark):
+                                xpos = int(lm.x * imgWidth)
+                                ypos = int(lm.y * imgHeight)
+                                # handsPoints.append((xpos, ypos))
                                 handsPoints[j]=(xpos, ypos)
-                            elif(result.multi_handedness[i].classification[0].label == 'Left'):
-                                handsPoints[j+21]=(xpos, ypos)
-                        
+                    elif (len(result.multi_hand_landmarks) == 2):
+                            handsPoints = [(-1,-1)] * 42
+                            for i,handLms in enumerate(result.multi_hand_landmarks):
+                                self.mpDraw.draw_landmarks(
+                                img, handLms, self.mpHands.HAND_CONNECTIONS, self.handLmsStyle, self.handConStyle)
+                                for j, lm in enumerate(handLms.landmark):
+                                    xpos = int(lm.x * imgWidth)
+                                    ypos = int(lm.y * imgHeight)
+                                    # handsPoints.append((xpos, ypos))
+                                    if(result.multi_handedness[i].classification[0].label == 'Right'):
+                                        print("LEFT")
+                                        handsPoints[j] = (xpos, ypos)
+                                    elif(result.multi_handedness[i].classification[0].label == 'Left'):
+                                        print("Right")
+                                        handsPoints[j+21] = (xpos, ypos)
                         # self.index_finger_trajectory=self.track_index_finger_movement(handsPoints)
                     print('handsPoints:',handsPoints)
                     print(len(handsPoints))
@@ -91,7 +104,7 @@ class GestureRecognition:
                             cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
 
                 cv2.imshow('img', img)
-            print("handsPoints:",handsPoints)
+            # print("handsPoints:",handsPoints)
             if cv2.waitKey(1) == ord('q'):
                 break
 
