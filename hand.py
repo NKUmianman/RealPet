@@ -77,8 +77,10 @@ class GestureRecognition:
                 distances[1] < fingers_threshold and \
                 distances[2] < fingers_threshold and \
                 distances[3] < fingers_threshold:
+            self.signal_list[3].set_variable(True)
             return True
         else:
+            self.signal_list[3].set_variable(False)
             return False
 
     def run(self):

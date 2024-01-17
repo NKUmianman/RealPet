@@ -1,3 +1,4 @@
+from math import e
 import random
 import time
 from PyQt5.QtGui import QIcon, QMovie
@@ -31,13 +32,17 @@ class handThread(QThread):
         while True:
             # 模拟线程执行任务
             if self.signal_list:
-                value = self.signal_list[1].get_variable()
-                if value != None:
+                movement = self.signal_list[1].get_variable()
+                bodytouch = self.signal_list[2].get_variable()
+                if movement != None:
                     # 发射信号，将一个随机值传递给槽函数
-                    self.pinch_signal.emit(value)
+                    self.pinch_signal.emit(movement)
                 # self.pinch_down_signal.emit()
                 else:
                     self.pinch_done_signal.emit()
+
+                if bodytouch:
+                    self.bodytouch_signal.emit()
             else:
                 break
 
@@ -103,24 +108,25 @@ class DemoWin(QMainWindow):
         self.handThread.pinch_signal.connect(self.fingerMovements)
         self.handThread.pinch_done_signal.connect(
             self.mouseReleaseEvent)
+        self.handThread.bodytouch_signal.connect(self.bodyTouched)
         self.handThread.start()
 
     def initUI(self):
         # 将窗口设置为动图大小
-        self.resize(400, 400)
+        self.resize(700, 700)
         self.label1 = QLabel("", self)
         self.label1.setStyleSheet(
             "font:15pt '楷体';border-width: 1px;color:blue;")  # 设置边框
         # 使用label来显示动画
         self.label = QLabel("", self)
         # label大小设置为动画大小
-        self.label.setFixedSize(200, 200)
+        self.label.setFixedSize(300, 300)
         # 设置动画路径
         self.movie = QMovie("./petGif/Default/Nomal/2/2.gif")
         self.movieurl = "./petGif/Default/Nomal/2/2.gif"
 
         # 宠物大小
-        self.movie.setScaledSize(QSize(200, 200))
+        self.movie.setScaledSize(QSize(300, 300))
         # 将动画添加到label中
         self.label.setMovie(self.movie)
         # 开始播放动画
@@ -142,7 +148,7 @@ class DemoWin(QMainWindow):
             self.movie = QMovie("./petGif/Touch_Body/A_Happy/tb2/tb2.gif")
             self.movieurl = "./petGif/Touch_Body/A_Happy/tb2/tb2.gif"
             # 宠物大小
-            self.movie.setScaledSize(QSize(200, 200))
+            self.movie.setScaledSize(QSize(300, 300))
             # 将动画添加到label中
             self.label.setMovie(self.movie)
             # 开始播放动画
@@ -156,7 +162,7 @@ class DemoWin(QMainWindow):
                 self.movie = QMovie(
                     "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif")
                 self.movieurl = "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif"
-                self.movie.setScaledSize(QSize(200, 200))
+                self.movie.setScaledSize(QSize(300, 300))
                 self.label.setMovie(self.movie)
                 self.movie.start()
             self.move(event.globalPos() - self.mouse_drag_pos)
@@ -170,7 +176,7 @@ class DemoWin(QMainWindow):
             self.movie = QMovie("./petGif/Default/Nomal/2/2.gif")
             self.movieurl = "./petGif/Default/Nomal/2/2.gif"
             # 宠物大小
-            self.movie.setScaledSize(QSize(200, 200))
+            self.movie.setScaledSize(QSize(300, 300))
             # 将动画添加到label中
             self.label.setMovie(self.movie)
             # 开始播放动画
@@ -229,7 +235,7 @@ class DemoWin(QMainWindow):
                 self.movie = QMovie(state)
                 self.movieurl = state
                 # 宠物大小
-                self.movie.setScaledSize(QSize(200, 200))
+                self.movie.setScaledSize(QSize(300, 300))
                 # 将动画添加到label中
                 self.label.setMovie(self.movie)
                 # 开始播放动画
@@ -241,7 +247,7 @@ class DemoWin(QMainWindow):
                 self.movie = QMovie("./petGif/Default/Nomal/2/2.gif")
                 self.movieurl = "./petGif/Default/Nomal/2/2.gif"
                 # 宠物大小
-                self.movie.setScaledSize(QSize(200, 200))
+                self.movie.setScaledSize(QSize(300, 300))
                 # 将动画添加到label中
                 self.label.setMovie(self.movie)
                 # 开始播放动画
@@ -271,12 +277,24 @@ class DemoWin(QMainWindow):
             self.movie = QMovie(
                 "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif")
             self.movieurl = "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif"
-            self.movie.setScaledSize(QSize(200, 200))
+            self.movie.setScaledSize(QSize(300, 300))
             self.label.setMovie(self.movie)
             self.movie.start()
         # 移动宠物到当前鼠标位置减去初始拖动位置的距离
         self.move(self.pos().x()+value[0], self.pos().y()+value[1])
         print("手指移动:", value[0], value[1])
+
+    def bodyTouched(self):
+        if self.movieurl != "./petGif/Touch_Body/A_Happy/tb2/tb2.gif":
+            self.movie = QMovie("./petGif/Touch_Body/A_Happy/tb2/tb2.gif")
+            self.movieurl = "./petGif/Touch_Body/A_Happy/tb2/tb2.gif"
+            # 宠物大小
+            self.movie.setScaledSize(QSize(300, 300))
+            # 将动画添加到label中
+            self.label.setMovie(self.movie)
+            # 开始播放动画
+            self.movie.start()
+            print("身体被触摸")
 
 
 def run(signal_list=None):
