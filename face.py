@@ -99,6 +99,14 @@ class FaceRecognition:
                     a2 = time.time()
                 # cv2.imshow('Camera', image)
                 cv2.waitKey(2)
+                if self.signal_list:
+                    # 设置非信号函数非阻塞检查
+                    self.signal_list[2].flag = True
+                    state = self.signal_list[2].get_variable()
+                    # print(state)
+                    if state == True:
+                        print("face线程退出")
+                        break
 
                 # out.write(image)
                 # print(f'one pic time is {a2 - a1} s')
