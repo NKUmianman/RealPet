@@ -203,10 +203,9 @@ class DemoWin(QMainWindow):
     '''退出程序'''
 
     def quit(self):
-        threads = self.signalfuction[1]
-        for thread in threads:
-            print(thread)
-            thread.terminated()
+        if self.signalfuction:
+            self.signalfuction[1].set_variable(True)
+            print("退出程序")
         self.close()
         sys.exit()
     '''显示'''
