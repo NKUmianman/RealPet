@@ -194,18 +194,19 @@ class DemoWin(QMainWindow):
     def contextMenuEvent(self, event):
         menu = QMenu(self)
         hide = menu.addAction("隐藏")
-        quitAction = menu.addAction("退出")
+        quit = menu.addAction("退出")
         action = menu.exec_(self.mapToGlobal(event.pos()))
-        if action == quitAction:
-            if self.signalfuction:
-                self.signalfuction[1].set_variable(True)
-                print("退出程序")
-            qApp.quit()
+        if action == quit:
+            self.quit()
         if action == hide:
             self.setWindowOpacity(0)
     '''退出程序'''
 
     def quit(self):
+        threads = self.signalfuction[1]
+        for thread in threads:
+            print(thread)
+            thread.terminated()
         self.close()
         sys.exit()
     '''显示'''
