@@ -117,6 +117,8 @@ class DemoWin(QMainWindow):
         self.label.setFixedSize(200, 200)
         # 设置动画路径
         self.movie = QMovie("./petGif/Default/Nomal/2/2.gif")
+        self.movieurl = "./petGif/Default/Nomal/2/2.gif"
+
         # 宠物大小
         self.movie.setScaledSize(QSize(200, 200))
         # 将动画添加到label中
@@ -138,6 +140,7 @@ class DemoWin(QMainWindow):
             event.accept()
             self.setCursor(QCursor(Qt.OpenHandCursor))
             self.movie = QMovie("./petGif/Touch_Body/A_Happy/tb2/tb2.gif")
+            self.movieurl = "./petGif/Touch_Body/A_Happy/tb2/tb2.gif"
             # 宠物大小
             self.movie.setScaledSize(QSize(200, 200))
             # 将动画添加到label中
@@ -165,6 +168,7 @@ class DemoWin(QMainWindow):
         if self.click == False:
             # 设置动画路径
             self.movie = QMovie("./petGif/Default/Nomal/2/2.gif")
+            self.movieurl = "./petGif/Default/Nomal/2/2.gif"
             # 宠物大小
             self.movie.setScaledSize(QSize(200, 200))
             # 将动画添加到label中
@@ -220,8 +224,10 @@ class DemoWin(QMainWindow):
         if self.is_follow_mouse == False:
             if not self.condition:
                 print("状态变更")
-                print(random.choice(self.states))
-                self.movie = QMovie(random.choice(self.states))
+                state = random.choice(self.states)
+                print(state)
+                self.movie = QMovie(state)
+                self.movieurl = state
                 # 宠物大小
                 self.movie.setScaledSize(QSize(200, 200))
                 # 将动画添加到label中
@@ -233,6 +239,7 @@ class DemoWin(QMainWindow):
                 print("状态还原")
                 # 设置动画路径
                 self.movie = QMovie("./petGif/Default/Nomal/2/2.gif")
+                self.movieurl = "./petGif/Default/Nomal/2/2.gif"
                 # 宠物大小
                 self.movie.setScaledSize(QSize(200, 200))
                 # 将动画添加到label中
