@@ -23,9 +23,40 @@ from gif import PetGifController
 
 class handThread(QThread):
     # 定义一个信号，用于在线程中发射信号
+    head_touch_signal = pyqtSignal()
+    touch_done_signal = pyqtSignal()
+    body_touch_signal = pyqtSignal()
+    shoot_signal = pyqtSignal()
+
+    def __init__(self, signal_list=None):
+        super().__init__()
+        self.signal_list = signal_list
+        self.released = False
+
+    def run(self):
+        while True:
+            # 模拟线程执行任务
+            if self.signal_list:
+                headtouch = self.signal_list[3].get_variable()
+                bodytouch = self.signal_list[2].get_variable()
+                shoot = self.signal_list[5].get_variable()
+                if headtouch:
+                    self.head_touch_signal.emit()
+                elif bodytouch:
+                    self.body_touch_signal.emit()
+                elif shoot:
+                    self.shoot_signal.emit()
+                else:
+                    self.touch_done_signal.emit()
+
+            else:
+                break
+
+
+class pinchThread(QThread):
+    # 定义一个信号，用于在线程中发射信号
     pinch_signal = pyqtSignal(tuple)
     pinch_done_signal = pyqtSignal()
-    bodytouch_signal = pyqtSignal()
 
     def __init__(self, signal_list=None):
         super().__init__()
@@ -34,18 +65,13 @@ class handThread(QThread):
     def run(self):
         while True:
             # 模拟线程执行任务
-            print('aaaaaaaaaaaaaaaaaaaaaaaaaaa')
             if self.signal_list:
                 movement = self.signal_list[1].get_variable()
-                bodytouch = self.signal_list[2].get_variable()
-                print('bodytouch:', bodytouch)
-                if movement != None:
+                print(movement)
+                if movement:
                     # 发射信号，将一个随机值传递给槽函数
                     self.pinch_signal.emit(movement)
-                # self.pinch_down_signal.emit()
-                elif bodytouch:
-                    self.bodytouch_signal.emit()
-                else:
+                elif movement == False:
                     self.pinch_done_signal.emit()
             else:
                 break
@@ -110,11 +136,17 @@ class DemoWin(QMainWindow):
             for name in files:
                 if name.endswith(".gif"):
                     self.states.append(os.path.join(root, name))
+        self.pinchThread = pinchThread(self.signal_list)
+        self.pinchThread.pinch_signal.connect(self.fingerMovements)
+        self.pinchThread.pinch_done_signal.connect(self.actionDoneEvent)
+        # self.pinchThread.bodytouch_signal.connect(self.bodyTouched)
+        self.pinchThread.start()
+
         self.handThread = handThread(self.signal_list)
-        self.handThread.pinch_signal.connect(self.fingerMovements)
-        self.handThread.pinch_done_signal.connect(
-            self.mouseReleaseEvent)
-        self.handThread.bodytouch_signal.connect(self.bodyTouched)
+        self.handThread.touch_done_signal.connect(self.actionDoneEvent)
+        self.handThread.head_touch_signal.connect(self.headTouch)
+        self.handThread.body_touch_signal.connect(self.bodyTouched)
+        self.handThread.shoot_signal.connect(self.shootTouched)
         self.handThread.start()
 
 
@@ -194,6 +226,20 @@ class DemoWin(QMainWindow):
         self.PetGifController.playGifByStatus('default')
         self.setCursor(QCursor(Qt.ArrowCursor))
 
+    def actionDoneEvent(self):
+        if self.click == False and self.is_follow_mouse == False:
+            if self.movieurl != "./petGif/Default/Nomal/2/2.gif":
+                # 设置动画路径
+                self.movie = QMovie("./petGif/Default/Nomal/2/2.gif")
+                self.movieurl = "./petGif/Default/Nomal/2/2.gif"
+                # 宠物大小
+                self.movie.setScaledSize(QSize(300, 300))
+                # 将动画添加到label中
+                self.label.setMovie(self.movie)
+                # 开始播放动画
+                self.movie.start()
+                self.setCursor(QCursor(Qt.ArrowCursor))
+
     def enterEvent(self, event):  # 鼠标移进时调用
         # print('鼠标移入')
         # 设置鼠标形状。需要from PyQt5.QtGui import QCursor,from PyQt5.QtCore import Qt
@@ -214,13 +260,10 @@ class DemoWin(QMainWindow):
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
-        hide = menu.addAction("隐藏")
         quitAction = menu.addAction("退出")
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action == quitAction:
             self.quit()
-        if action == hide:
-            self.setWindowOpacity(0)
     '''退出程序'''
 
     def quit(self):
@@ -270,7 +313,7 @@ class DemoWin(QMainWindow):
         self.is_follow_mouse = True
         self.setQMovieURL("./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif")
         # 移动宠物到当前鼠标位置减去初始拖动位置的距离
-        self.move(self.pos().x()+value[0], self.pos().y()+value[1])
+        self.move(self.pos().x()+value[0]*3, self.pos().y()+value[1]*3)
         print("手指移动:", value[0], value[1])
 
     def bodyTouched(self):
@@ -287,10 +330,38 @@ class DemoWin(QMainWindow):
             # self.label.setMovie(self.movie)
             # self.movie.start()
 
+    def shootTouched(self):
+        print("如何呢")
+        self.click = False
+        self.is_follow_mouse = True
+        if self.movieurl != "./petGif/Shutdown/Nomal_1/Nomal_1.gif":
+            self.movie = QMovie("./petGif/Shutdown/Nomal_1/Nomal_1.gif")
+            self.movieurl = "./petGif/Shutdown/Nomal_1/Nomal_1.gif"
+            # 宠物大小
+            self.movie.setScaledSize(QSize(300, 300))
+            # 将动画添加到label中
+            self.label.setMovie(self.movie)
+
+            # 开始播放动画
+            self.movie.start()
+
+    def headTouch(self):
+        self.click = False
+        if self.movieurl != "./petGif/Touch_Body/B_Happy/tb1/tb1.gif":
+            self.movie = QMovie("./petGif/Touch_Body/B_Happy/tb1/tb1.gif")
+            self.movieurl = "./petGif/Touch_Body/B_Happy/tb1/tb1.gif"
+            # 宠物大小
+            self.movie.setScaledSize(QSize(300, 300))
+            # 将动画添加到label中
+            self.label.setMovie(self.movie)
+
+            # 开始播放动画
+            self.movie.start()
+
 
 def run(signal_list=None):
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon("1.jpg"))
+    app.setWindowIcon(QIcon("myicon.ico"))
     # 创建一个主窗口
     mainWin = DemoWin(signal_list)
     # 显示

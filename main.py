@@ -3,28 +3,7 @@ import pet
 import hand
 import face
 import cv2
-
-
-class SharedResource:
-    def __init__(self):
-        self.flag = False
-        self.variable = None
-        self.condition = threading.Condition()
-
-    def set_variable(self, new_value):
-        with self.condition:
-            self.variable = new_value
-            self.flag = True
-            # 通知等待的线程，条件已经满足
-            self.condition.notify()
-
-    def get_variable(self):
-        with self.condition:
-            # 等待条件满足
-            while self.flag is False:
-                self.condition.wait()
-            self.flag = False
-            return self.variable
+from shareResource import SharedResource
 
 
 def handtask(shared_resource):
@@ -46,14 +25,16 @@ if __name__ == "__main__":
     face_feature = SharedResource()
     pinch = SharedResource()
     bodytouch = SharedResource()
+    headtouch = SharedResource()
+    shoot = SharedResource()
     stop_program = SharedResource()
     # 创建线程对象
     hand_thread = threading.Thread(target=handtask, args=(
-        [cap, stop_program, pinch, bodytouch],))
+        [cap, stop_program, pinch, bodytouch, headtouch,shoot],))
     face_thread = threading.Thread(
         target=facetask, args=([cap, stop_program, face_feature],))
     pet_thread = threading.Thread(target=pettask, args=(
-        [stop_program, pinch, bodytouch, face_feature],))
+        [stop_program, pinch, bodytouch, headtouch,face_feature,shoot],))
     # 启动线程
 
     face_thread.start()
