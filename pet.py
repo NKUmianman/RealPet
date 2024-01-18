@@ -17,6 +17,7 @@ os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = "Lib\site-packages\PyQt5\Qt\plugins"
 # 导入常用组件
 # 使用调色板等
 
+
 class handThread(QThread):
     # 定义一个信号，用于在线程中发射信号
     touch_signal = pyqtSignal()
@@ -30,12 +31,11 @@ class handThread(QThread):
     def run(self):
         while True:
             # 模拟线程执行任务
-            print('bbbbbbbbbbb')
             if self.signal_list:
                 print("flag: ", self.flag)
-                movement = self.signal_list[2].get_variable()
+                bodytouch = self.signal_list[2].get_variable()
 
-                if movement:
+                if bodytouch:
                     if self.flag:
                         # 发射信号，将一个随机值传递给槽函数
                         self.touch_signal.emit()
@@ -46,6 +46,7 @@ class handThread(QThread):
                         self.flag = True
             else:
                 break
+
 
 class pinchThread(QThread):
     # 定义一个信号，用于在线程中发射信号
@@ -59,7 +60,6 @@ class pinchThread(QThread):
     def run(self):
         while True:
             # 模拟线程执行任务
-            print('aaaaaaaaaaaaaaaaaaaaaaaaaaa')
             if self.signal_list:
                 movement = self.signal_list[1].get_variable()
 
