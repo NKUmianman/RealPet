@@ -65,7 +65,7 @@ class pinchThread(QThread):
                 if movement:
                     # 发射信号，将一个随机值传递给槽函数
                     self.pinch_signal.emit(movement)
-                elif movement==False:
+                elif movement == False:
                     self.pinch_done_signal.emit()
             else:
                 break
