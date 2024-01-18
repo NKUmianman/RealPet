@@ -136,7 +136,6 @@ class DemoWin(QMainWindow):
 
         self.handThread = handThread(self.signal_list)
         self.handThread.touch_done_signal.connect(self.mouseReleaseEvent)
-
         self.handThread.head_touch_signal.connect(self.headTouch)
         self.handThread.body_touch_signal.connect(self.bodyTouched)
 
@@ -235,13 +234,10 @@ class DemoWin(QMainWindow):
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
-        hide = menu.addAction("隐藏")
         quitAction = menu.addAction("退出")
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action == quitAction:
             self.quit()
-        if action == hide:
-            self.setWindowOpacity(0)
     '''退出程序'''
 
     def quit(self):
