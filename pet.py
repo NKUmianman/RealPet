@@ -205,13 +205,10 @@ class DemoWin(QMainWindow):
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
-        hide = menu.addAction("隐藏")
         quitAction = menu.addAction("退出")
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action == quitAction:
             self.quit()
-        if action == hide:
-            self.setWindowOpacity(0)
     '''退出程序'''
 
     def quit(self):
@@ -300,7 +297,7 @@ class DemoWin(QMainWindow):
 
 def run(signal_list=None):
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon("1.jpg"))
+    app.setWindowIcon(QIcon("myicon.ico"))
     # 创建一个主窗口
     mainWin = DemoWin(signal_list)
     # 显示
