@@ -59,7 +59,7 @@ class pinchThread(QThread):
                 movement = self.signal_list[1].get_variable()
                 if movement != None:
                     # 发射信号，将movement传递给槽函数
-                    self.pinch_signal.emit()
+                    self.pinch_signal.emit(movement)
                 else:
                     self.pinch_done_signal.emit()
             else:
