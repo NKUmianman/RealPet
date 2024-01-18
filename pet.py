@@ -34,16 +34,11 @@ class handThread(QThread):
             if self.signal_list:
                 print("flag: ", self.flag)
                 movement = self.signal_list[2].get_variable()
-
                 if movement:
-                    if self.flag:
-                        # 发射信号，将一个随机值传递给槽函数
-                        self.touch_signal.emit()
-                        self.flag = False
+                    # 发射信号，将movement传递给槽函数
+                    self.touch_signal.emit(movement)
                 else:
-                    if not self.flag:
-                        self.action_done_signal.emit()
-                        self.flag = True
+                    self.action_done_signal.emit()
             else:
                 break
 
@@ -64,7 +59,7 @@ class pinchThread(QThread):
                 movement = self.signal_list[1].get_variable()
 
                 if movement != None:
-                    # 发射信号，将一个随机值传递给槽函数
+                    # 发射信号，将movement传递给槽函数
                     self.pinch_signal.emit(movement)
                 else:
                     self.pinch_done_signal.emit()
