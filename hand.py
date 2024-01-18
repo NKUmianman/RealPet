@@ -55,7 +55,8 @@ class GestureRecognition:
             return movement_vector
         if self.signalflag == True:
             if self.signal_list:
-                self.signal_list[2].set_variable(None)
+                self.signal_list[2].set_variable(False)
+                print("设置了None")
                 self.signalflag = False
         return None
 

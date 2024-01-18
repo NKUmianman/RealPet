@@ -60,11 +60,11 @@ class pinchThread(QThread):
             # 模拟线程执行任务
             if self.signal_list:
                 movement = self.signal_list[1].get_variable()
-
-                if movement != None:
+                print(movement)
+                if movement:
                     # 发射信号，将一个随机值传递给槽函数
                     self.pinch_signal.emit(movement)
-                else:
+                elif movement==False:
                     self.pinch_done_signal.emit()
             else:
                 break

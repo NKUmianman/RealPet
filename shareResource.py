@@ -19,5 +19,5 @@ class SharedResource:
             # 等待条件满足
             while self.flag is False:
                 self.condition.wait()
-            self.flag = False
-            return self.variable
+        self.flag = False
+        return self.variable
