@@ -35,7 +35,7 @@ class handThread(QThread):
                 # print("flag: ", self.flag)
                 bodytouch = self.signal_list[4].get_variable()
 
-                if bodytouch:
+                if bodytouch is True:
                     # if self.flag:
                         # 发射信号，将一个随机值传递给槽函数
                     self.touch_signal.emit()
