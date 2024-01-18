@@ -6,9 +6,6 @@ import cv2
 from shareResource import SharedResource
 
 
-
-
-
 def handtask(shared_resource):
     gest = hand.GestureRecognition(signal_list=shared_resource)
     gest.run()
@@ -36,7 +33,7 @@ if __name__ == "__main__":
     face_thread = threading.Thread(
         target=facetask, args=([cap, stop_program, face_feature],))
     pet_thread = threading.Thread(target=pettask, args=(
-        [stop_program, pinch, bodytouch, face_feature, headtouch],))
+        [stop_program, pinch, bodytouch, headtouch, face_feature],))
     # 启动线程
 
     face_thread.start()

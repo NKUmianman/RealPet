@@ -161,11 +161,11 @@ class GestureRecognition:
                                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
 
                         elif self.detect_headtouch_gesture(handsPoints):
-                            cv2.putText(img, "Touch Gesture Detected", (30, 100),
+                            cv2.putText(img, "Head Touch Gesture Detected", (30, 100),
                                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
 
                         if self.detect_bodytouch_gesture(handsPoints):
-                            cv2.putText(img, "Head Touch Gesture Detected", (30, 100),
+                            cv2.putText(img, "Body Touch Gesture Detected", (30, 100),
                                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
                         # if self.signal_list and self.index_finger_trajectory!=(0,0):
                         #     self.signal_list(self.index_finger_trajectory)
@@ -200,7 +200,7 @@ class GestureRecognition:
 
     # 检测抚摸的手势
     def detect_headtouch_gesture(self, handspoints):
-        if len(handspoints)>21:
+        if len(handspoints) > 21:
             handmarks1 = [handspoints[5], handspoints[9], handspoints[13], handspoints[17],
                           handspoints[8], handspoints[12], handspoints[16], handspoints[20]]
             handmarks2 = [handspoints[26], handspoints[30], handspoints[34], handspoints[38],
@@ -214,7 +214,7 @@ class GestureRecognition:
                 return True
         else:
             handmarks = [handspoints[5], handspoints[9], handspoints[13], handspoints[17],
-                          handspoints[8], handspoints[12], handspoints[16], handspoints[20]]
+                         handspoints[8], handspoints[12], handspoints[16], handspoints[20]]
             s = self.detect_touch(handmarks)
             if s < 1000:
                 print("s: ", s)

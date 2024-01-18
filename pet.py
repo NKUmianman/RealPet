@@ -20,11 +20,11 @@ os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = "Lib\site-packages\PyQt5\Qt\plugins"
 
 class handThread(QThread):
     # 定义一个信号，用于在线程中发射信号
-    touch_signal = pyqtSignal()
-    action_done_signal = pyqtSignal()
+    head_touch_signal = pyqtSignal()
+    touch_done_signal = pyqtSignal()
+    body_touch_signal = pyqtSignal()
 
     def __init__(self, signal_list=None):
-        # self.flag = True
         super().__init__()
         self.signal_list = signal_list
 
@@ -32,18 +32,16 @@ class handThread(QThread):
         while True:
             # 模拟线程执行任务
             if self.signal_list:
-                # print("flag: ", self.flag)
-                bodytouch = self.signal_list[4].get_variable()
+                headtouch = self.signal_list[3].get_variable()
+                bodytouch = self.signal_list[2].get_variable()
 
-                if bodytouch:
-                    # if self.flag:
-                        # 发射信号，将一个随机值传递给槽函数
-                    self.touch_signal.emit()
-                        # self.flag = False
+                if headtouch:
+                    self.head_touch_signal.emit()
+                elif bodytouch:
+                    self.body_touch_signal.emit()
                 else:
-                    # if not self.flag:
-                    self.action_done_signal.emit()
-                        # self.flag = True
+                    self.touch_done_signal.emit()
+
             else:
                 break
 
@@ -137,9 +135,10 @@ class DemoWin(QMainWindow):
         self.pinchThread.start()
 
         self.handThread = handThread(self.signal_list)
-        self.handThread.action_done_signal.connect(self.mouseReleaseEvent)
+        self.handThread.touch_done_signal.connect(self.mouseReleaseEvent)
 
-        self.handThread.touch_signal.connect(self.headTouch)
+        self.handThread.head_touch_signal.connect(self.headTouch)
+        self.handThread.body_touch_signal.connect(self.bodyTouched)
 
         self.handThread.start()
 
@@ -313,7 +312,7 @@ class DemoWin(QMainWindow):
             self.label.setMovie(self.movie)
             self.movie.start()
         # 移动宠物到当前鼠标位置减去初始拖动位置的距离
-        self.move(self.pos().x()+value[0], self.pos().y()+value[1])
+        self.move(self.pos().x()+value[0]*3, self.pos().y()+value[1]*3)
         print("手指移动:", value[0], value[1])
 
     def bodyTouched(self):
