@@ -344,7 +344,6 @@ class DemoWin(QMainWindow):
     def shootTouched(self):
         print("如何呢")
         self.click = False
-        self.is_follow_mouse = True
         if self.movieurl != "./petGif/Shutdown/Nomal_1/Nomal_1.gif":
             self.movie = QMovie("./petGif/Shutdown/Nomal_1/Nomal_1.gif")
             self.movieurl = "./petGif/Shutdown/Nomal_1/Nomal_1.gif"
