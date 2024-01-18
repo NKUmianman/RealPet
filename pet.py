@@ -130,8 +130,7 @@ class DemoWin(QMainWindow):
                     self.states.append(os.path.join(root, name))
         self.pinchThread = pinchThread(self.signal_list)
         self.pinchThread.pinch_signal.connect(self.fingerMovements)
-        self.pinchThread.pinch_done_signal.connect(
-            self.actionDoneEvent)
+        self.pinchThread.pinch_done_signal.connect(self.actionDoneEvent)
         # self.pinchThread.bodytouch_signal.connect(self.bodyTouched)
         self.pinchThread.start()
 
