@@ -27,6 +27,7 @@ class handThread(QThread):
     def __init__(self, signal_list=None):
         super().__init__()
         self.signal_list = signal_list
+        self.released = False
 
     def run(self):
         while True:
@@ -130,12 +131,12 @@ class DemoWin(QMainWindow):
         self.pinchThread = pinchThread(self.signal_list)
         self.pinchThread.pinch_signal.connect(self.fingerMovements)
         self.pinchThread.pinch_done_signal.connect(
-            self.mouseReleaseEvent)
+            self.actionDoneEvent)
         # self.pinchThread.bodytouch_signal.connect(self.bodyTouched)
         self.pinchThread.start()
 
         self.handThread = handThread(self.signal_list)
-        self.handThread.touch_done_signal.connect(self.mouseReleaseEvent)
+        self.handThread.touch_done_signal.connect(self.actionDoneEvent)
         self.handThread.head_touch_signal.connect(self.headTouch)
         self.handThread.body_touch_signal.connect(self.bodyTouched)
 
@@ -213,6 +214,20 @@ class DemoWin(QMainWindow):
             self.movie.start()
         self.is_follow_mouse = False
         self.setCursor(QCursor(Qt.ArrowCursor))
+
+    def actionDoneEvent(self):
+        if self.click == False and self.is_follow_mouse == False:
+            if self.movieurl != "./petGif/Default/Nomal/2/2.gif":
+                # 设置动画路径
+                self.movie = QMovie("./petGif/Default/Nomal/2/2.gif")
+                self.movieurl = "./petGif/Default/Nomal/2/2.gif"
+                # 宠物大小
+                self.movie.setScaledSize(QSize(300, 300))
+                # 将动画添加到label中
+                self.label.setMovie(self.movie)
+                # 开始播放动画
+                self.movie.start()
+                self.setCursor(QCursor(Qt.ArrowCursor))
 
     def enterEvent(self, event):  # 鼠标移进时调用
         # print('鼠标移入')
@@ -299,7 +314,6 @@ class DemoWin(QMainWindow):
         # if Qt.LeftButton and self.is_follow_mouse:
         # 标记点击事件为非点击
         self.click = False
-        self.is_follow_mouse = True
         if self.movieurl != "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif":
             self.movie = QMovie(
                 "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif")
@@ -313,7 +327,6 @@ class DemoWin(QMainWindow):
 
     def bodyTouched(self):
         self.click = False
-        self.is_follow_mouse = True
         if self.movieurl != "./petGif/Touch_Body/A_Happy/tb2/tb2.gif":
             self.movie = QMovie("./petGif/Touch_Body/A_Happy/tb2/tb2.gif")
             self.movieurl = "./petGif/Touch_Body/A_Happy/tb2/tb2.gif"
@@ -328,7 +341,6 @@ class DemoWin(QMainWindow):
 
     def headTouch(self):
         self.click = False
-        self.is_follow_mouse = True
         if self.movieurl != "./petGif/Touch_Body/B_Happy/tb1/tb1.gif":
             self.movie = QMovie("./petGif/Touch_Body/B_Happy/tb1/tb1.gif")
             self.movieurl = "./petGif/Touch_Body/B_Happy/tb1/tb1.gif"
