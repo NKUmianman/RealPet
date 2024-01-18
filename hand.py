@@ -20,8 +20,8 @@ class GestureRecognition:
         self.index_finger_landmarks = None
         self.crawl = None
         self.signal_list = signal_list
-        self.signalflag = False
-
+        self.pinch_signal_flag = False
+    
     def detect_pinch_gesture(self, handLms):
         thumb_tip = handLms[4]  # 拇指指尖
         index_tip = handLms[8]  # 食指指尖
@@ -51,13 +51,13 @@ class GestureRecognition:
             print("食指移动：", movement_vector)
             if self.signal_list:
                 self.signal_list[2].set_variable(self.crawl)
-                self.signalflag = True
+                self.pinch_signal_flag = True
             return movement_vector
-        if self.signalflag == True:
+        if self.pinch_signal_flag== True:
             if self.signal_list:
                 self.signal_list[2].set_variable(False)
-                print("设置了None")
-                self.signalflag = False
+                print("设置了False")
+                self.pinch_signal_flag = False
         return None
 
     def detect_bodytouch_gesture(self, handLms):
@@ -170,8 +170,8 @@ class GestureRecognition:
                                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
                         # if self.signal_list and self.index_finger_trajectory!=(0,0):
                         #     self.signal_list(self.index_finger_trajectory)
-                else:
-                    self.signal_list[2].set_variable(None)
+                # else:
+                    # self.signal_list[2].set_variable(None)
                     self.signal_list[3].set_variable(None)
                 self.cTime = time.time()
                 fps = 1 / (self.cTime - self.pTime)
