@@ -59,29 +59,29 @@ class GestureRecognition:
                 self.signalflag = False
         return None
 
-    def detect_touch_gesture(self, handLms):
-        root = handLms[0]  # 手掌根部
-        thumb_tip = handLms[4]  # 拇指指尖
-        middle_tip = handLms[12]  # 中指指尖
-        ring_tip = handLms[16]  # 无名指指尖
-        pinky_tip = handLms[20]  # 小指指尖
-
-        distances = [((tip[0] - root[0])**2 +
-                      (tip[1] - root[1])**2)**0.5 for tip in (thumb_tip, middle_tip, ring_tip, pinky_tip)]
-
-        # 设置手势的阈值，根据需要进行调整
-        fingers_threshold = 70  # 其他指头并拢的距离阈值
-
-        # 食指指尖距离摄像头够近，并且其他指头都在一定距离内
-        if distances[0] < fingers_threshold and \
-                distances[1] < fingers_threshold and \
-                distances[2] < fingers_threshold and \
-                distances[3] < fingers_threshold:
-            self.signal_list[3].set_variable(True)
-            return True
-        else:
-            self.signal_list[3].set_variable(False)
-            return False
+    # def detect_touch_gesture(self, handLms):
+    #     root = handLms[0]  # 手掌根部
+    #     thumb_tip = handLms[4]  # 拇指指尖
+    #     middle_tip = handLms[12]  # 中指指尖
+    #     ring_tip = handLms[16]  # 无名指指尖
+    #     pinky_tip = handLms[20]  # 小指指尖
+    #
+    #     distances = [((tip[0] - root[0])**2 +
+    #                   (tip[1] - root[1])**2)**0.5 for tip in (thumb_tip, middle_tip, ring_tip, pinky_tip)]
+    #
+    #     # 设置手势的阈值，根据需要进行调整
+    #     fingers_threshold = 70  # 其他指头并拢的距离阈值
+    #
+    #     # 食指指尖距离摄像头够近，并且其他指头都在一定距离内
+    #     if distances[0] < fingers_threshold and \
+    #             distances[1] < fingers_threshold and \
+    #             distances[2] < fingers_threshold and \
+    #             distances[3] < fingers_threshold:
+    #         self.signal_list[3].set_variable(True)
+    #         return True
+    #     else:
+    #         self.signal_list[3].set_variable(False)
+    #         return False
 
     def run(self):
         while True:
@@ -98,7 +98,7 @@ class GestureRecognition:
                 if result.multi_hand_landmarks:
                     # print("集合",(result.multi_hand_landmarks))
                     # print((result.multi_handedness[0].classification[0].label))
-                    print("左右手", result.multi_handedness)
+                    # print("左右手", result.multi_handedness)
                     # print("multi_hand_landmarks",result.multi_hand_landmarks)
                     if (len(result.multi_hand_landmarks) == 1):
                         handsPoints = [(-1, -1)] * 21
@@ -120,19 +120,19 @@ class GestureRecognition:
                                 ypos = int(lm.y * imgHeight)
                                 # handsPoints.append((xpos, ypos))
                                 if (result.multi_handedness[i].classification[0].label == 'Right'):
-                                    print("LEFT")
+                                    # print("LEFT")
                                     handsPoints[j] = (xpos, ypos)
                                 elif (result.multi_handedness[i].classification[0].label == 'Left'):
-                                    print("Right")
+                                    # print("Right")
                                     handsPoints[j + 21] = (xpos, ypos)
                     # self.index_finger_trajectory=self.track_index_finger_movement(handsPoints)
-                    print('handsPoints:', handsPoints)
-                    print(len(handsPoints))
+                    # print('handsPoints:', handsPoints)
+                    # print(len(handsPoints))
 
                     # if self.detect_pinch_gesture(handsPoints):
                     # cv2.putText(img, "Pinch Gesture Detected", (30, 100),
                     # cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
-                    # if self.signalfuctin and self.index_finger_trajectory!=(0,0):
+                    # if self.signbu liaoalfuctin and self.index_finger_trajectory!=(0,0):
                     #     self.signalfuctin(self.index_finger_trajectory)
 
                     # if self.detect_pinch_gesture(handsPoints):
@@ -159,12 +159,15 @@ class GestureRecognition:
                         if self.detect_pinch_gesture(handsPoints):
                             cv2.putText(img, "Pinch Gesture Detected", (30, 100),
                                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
-                        elif self.detect_touch_gesture(handsPoints):
+
+                        if self.detect_touch_gesture(handsPoints):
                             cv2.putText(img, "Touch Gesture Detected", (30, 100),
                                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
                         # if self.signal_list and self.index_finger_trajectory!=(0,0):
                         #     self.signal_list(self.index_finger_trajectory)
-
+                else:
+                    self.signal_list[2].set_variable(None)
+                    self.signal_list[3].set_variable(None)
                 self.cTime = time.time()
                 fps = 1 / (self.cTime - self.pTime)
                 self.pTime = self.cTime
@@ -202,13 +205,16 @@ class GestureRecognition:
             s2 = self.detect_touch(handmarks2)
             if s1 < 35 or s2 <35:
                 # self.signal_list[1].set_variable(self.index_finger_trajectory)
+                self.signal_list[3].set_variable(True)
                 return True
         else:
             handmarks = [handspoints[5], handspoints[9], handspoints[13], handspoints[17],
                           handspoints[8], handspoints[12], handspoints[16], handspoints[20]]
             s = self.detect_touch(handmarks)
             if s < 35:
+                self.signal_list[3].set_variable(True)
                 return True
+        self.signal_list[3].set_variable(False)
         return False
 
 

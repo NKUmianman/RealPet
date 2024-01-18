@@ -34,16 +34,22 @@ class handThread(QThread):
             print('aaaaaaaaaaaaaaaaaaaaaaaaaaa')
             if self.signal_list:
                 movement = self.signal_list[1].get_variable()
-                bodytouch = self.signal_list[2].get_variable()
-                print('bodytouch:', bodytouch)
+
                 if movement != None:
                     # 发射信号，将一个随机值传递给槽函数
                     self.pinch_signal.emit(movement)
-                # self.pinch_down_signal.emit()
-                elif bodytouch:
-                    self.bodytouch_signal.emit()
                 else:
-                    self.pinch_done_signal.emit()
+                    bodytouch = self.signal_list[2].get_variable()
+                    print('bodytouch:', bodytouch)
+                    if bodytouch:
+                        self.bodytouch_signal.emit()
+                    else:
+                        self.pinch_done_signal.emit()
+                # self.pinch_down_signal.emit()
+                # elif bodytouch:
+                #     self.bodytouch_signal.emit()
+                # else:
+                #     self.pinch_done_signal.emit()
             else:
                 break
 
@@ -286,6 +292,8 @@ class DemoWin(QMainWindow):
         print("手指移动:", value[0], value[1])
 
     def bodyTouched(self):
+        self.click = False
+        self.is_follow_mouse = True
         if self.movieurl != "./petGif/Touch_Body/A_Happy/tb2/tb2.gif":
             self.movie = QMovie("./petGif/Touch_Body/A_Happy/tb2/tb2.gif")
             self.movieurl = "./petGif/Touch_Body/A_Happy/tb2/tb2.gif"
@@ -293,6 +301,7 @@ class DemoWin(QMainWindow):
             self.movie.setScaledSize(QSize(300, 300))
             # 将动画添加到label中
             self.label.setMovie(self.movie)
+
             # 开始播放动画
             self.movie.start()
             print("身体被触摸")
