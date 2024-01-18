@@ -59,7 +59,7 @@ class GestureRecognition:
                 self.signalflag = False
         return None
 
-    def detect_touch_gesture(self, handLms):
+    def detect_bodytouch_gesture(self, handLms):
         root = handLms[0]  # 手掌根部
         thumb_tip = handLms[4]  # 拇指指尖
         middle_tip = handLms[12]  # 中指指尖
@@ -160,11 +160,11 @@ class GestureRecognition:
                             cv2.putText(img, "Pinch Gesture Detected", (30, 100),
                                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
 
-                        if self.detect_headtouch_gesture(handsPoints):
+                        elif self.detect_headtouch_gesture(handsPoints):
                             cv2.putText(img, "Touch Gesture Detected", (30, 100),
                                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
 
-                        if self.detect_touch_gesture(handsPoints):
+                        if self.detect_bodytouch_gesture(handsPoints):
                             cv2.putText(img, "Head Touch Gesture Detected", (30, 100),
                                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
                         # if self.signal_list and self.index_finger_trajectory!=(0,0):
