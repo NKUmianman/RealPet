@@ -23,7 +23,7 @@ class handThread(QThread):
     head_touch_signal = pyqtSignal()
     touch_done_signal = pyqtSignal()
     body_touch_signal = pyqtSignal()
-
+    shoot_signal = pyqtSignal()
     def __init__(self, signal_list=None):
         super().__init__()
         self.signal_list = signal_list
@@ -35,11 +35,13 @@ class handThread(QThread):
             if self.signal_list:
                 headtouch = self.signal_list[3].get_variable()
                 bodytouch = self.signal_list[2].get_variable()
-
+                shoot = self.signal_list[5].get_variable()
                 if headtouch:
                     self.head_touch_signal.emit()
                 elif bodytouch:
                     self.body_touch_signal.emit()
+                elif shoot:
+                    self.shoot_signal.emit()
                 else:
                     self.touch_done_signal.emit()
 
@@ -130,8 +132,7 @@ class DemoWin(QMainWindow):
                     self.states.append(os.path.join(root, name))
         self.pinchThread = pinchThread(self.signal_list)
         self.pinchThread.pinch_signal.connect(self.fingerMovements)
-        self.pinchThread.pinch_done_signal.connect(
-            self.actionDoneEvent)
+        self.pinchThread.pinch_done_signal.connect(self.actionDoneEvent)
         # self.pinchThread.bodytouch_signal.connect(self.bodyTouched)
         self.pinchThread.start()
 
@@ -139,7 +140,7 @@ class DemoWin(QMainWindow):
         self.handThread.touch_done_signal.connect(self.actionDoneEvent)
         self.handThread.head_touch_signal.connect(self.headTouch)
         self.handThread.body_touch_signal.connect(self.bodyTouched)
-
+        self.handThread.shoot_signal.connect(self.shootTouched)
         self.handThread.start()
 
     def initUI(self):
@@ -338,7 +339,20 @@ class DemoWin(QMainWindow):
             # 开始播放动画
             self.movie.start()
             print("身体被触摸")
+    def shootTouched(self):
+        print("如何呢")
+        self.click = False
+        self.is_follow_mouse = True
+        if self.movieurl != "./petGif/Shutdown/Happy_1/Happy_1.gif":
+            self.movie = QMovie("./petGif/Shutdown/Happy_1/Happy_1.gif")
+            self.movieurl ="./petGif/Shutdown/Happy_1/Happy_1.gif"
+            # 宠物大小
+            self.movie.setScaledSize(QSize(300, 300))
+            # 将动画添加到label中
+            self.label.setMovie(self.movie)
 
+            # 开始播放动画
+            self.movie.start()
     def headTouch(self):
         self.click = False
         if self.movieurl != "./petGif/Touch_Body/B_Happy/tb1/tb1.gif":
