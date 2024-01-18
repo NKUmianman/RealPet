@@ -258,7 +258,6 @@ class DemoWin(QMainWindow):
         # if Qt.LeftButton and self.is_follow_mouse:
         # 标记点击事件为非点击
         self.click = False
-        self.is_follow_mouse = True
         # 移动宠物到当前鼠标位置减去初始拖动位置的距离
         self.move(self.pos().x()+value[0]*3, self.pos().y()+value[1]*3)
         # print("手指移动:", value[0], value[1])
