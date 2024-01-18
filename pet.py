@@ -24,6 +24,7 @@ class handThread(QThread):
     touch_done_signal = pyqtSignal()
     body_touch_signal = pyqtSignal()
     shoot_signal = pyqtSignal()
+
     def __init__(self, signal_list=None):
         super().__init__()
         self.signal_list = signal_list
@@ -339,13 +340,14 @@ class DemoWin(QMainWindow):
             # 开始播放动画
             self.movie.start()
             print("身体被触摸")
+
     def shootTouched(self):
         print("如何呢")
         self.click = False
         self.is_follow_mouse = True
-        if self.movieurl != "./petGif/Shutdown/Happy_1/Happy_1.gif":
-            self.movie = QMovie("./petGif/Shutdown/Happy_1/Happy_1.gif")
-            self.movieurl ="./petGif/Shutdown/Happy_1/Happy_1.gif"
+        if self.movieurl != "./petGif/Shutdown/Nomal_1/Nomal_1.gif":
+            self.movie = QMovie("./petGif/Shutdown/Nomal_1/Nomal_1.gif")
+            self.movieurl = "./petGif/Shutdown/Nomal_1/Nomal_1.gif"
             # 宠物大小
             self.movie.setScaledSize(QSize(300, 300))
             # 将动画添加到label中
@@ -353,6 +355,7 @@ class DemoWin(QMainWindow):
 
             # 开始播放动画
             self.movie.start()
+
     def headTouch(self):
         self.click = False
         if self.movieurl != "./petGif/Touch_Body/B_Happy/tb1/tb1.gif":
