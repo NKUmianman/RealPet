@@ -42,16 +42,16 @@ class PetGifController:
         self.playGifByStatus('start')
 
     '''外部调用 希望把gif改成什么状态 加上id可以控制用哪个'''
-    def playGifByStatus(self, status, id=None):
+    def playGifByStatus(self, status, id=None, forceInterrupt=False):
         self.status = status
+        print('playGifByStatus', status)
+        if forceInterrupt: self.waitingObjList = []
         if len(self.waitingObjList) == 0:
             obj = self.getNextGifObj(id)
-            print('playGifByStatus', obj)
             if self.status == 'start': self.status = 'default'
             if self.animationGroup:
                 # 在动画组
                 exit = self.getExitGif()
-                print(exit)
                 if self.interrupt['group'] and self.interrupt['gif']:
                     if exit is not False:
                         self.prePlayGif({
@@ -68,7 +68,6 @@ class PetGifController:
                         self.waitingObjList.append(obj)
             else:
                 if self.interrupt['gif']:
-                    print('asccccccccccccccccccccccccccccccccc')
                     self.prePlayGif(obj)
                 else:
                     self.waitingObjList.append(obj)
@@ -79,22 +78,15 @@ class PetGifController:
             self.movieurl = url
             self.movie.setFileName(url)
             self.frameAmount = self.movie.frameCount()
-            print(self.frameAmount)
-            print(self.movieurl)
-            print(self.status)
             self.movie.start()
-            print('ascsacsacsc')
 
     '''gif帧改变的回调'''
     def frameChanged(self, i):
-        print('frameChanged', i, self.frameAmount)
         if self.frameAmount == i + 1:
-            print('status', self.status)
             self.gifFinished()
     
     def gifFinished(self):
         if len(self.waitingObjList) > 0:
-            print('waitingObjList')
             self.animationGroup = False
             self.animationGroupData = {
                 'amount': 0,
@@ -106,16 +98,13 @@ class PetGifController:
                 # 在动画组
                 if len(self.animationQueue) > 0:
                     temp = self.animationQueue[0]
-                    print('在动画组', temp)
                     amount = temp.get('amount', 10000000000)
                     allTime = temp.get('time', 10000000000)
                     now = int(time.time() * 1000)
                     diff = now - self.animationGroupData['time']
                     self.animationGroupData['amount'] += 1
-                    print(self.animationQueue, self.animationGroupData['amount'], amount, diff, allTime)
                     if self.animationGroupData['amount'] >= amount or diff >= allTime:
                         # 结束此次动画
-                        print('动画组此次动画结束播放')
                         self.animationGroupData = {
                             'amount': 0,
                             'time': 0
@@ -126,16 +115,13 @@ class PetGifController:
                             return
                         else:
                             # 动画组结束了
-                            print('动画组结束了1')
                             self.animationGroup = False
                     else:
                         return
                 else:
                     # 动画组结束了
-                    print('动画组结束了2')
                     self.animationGroup = False
             # 不在动画组
-            print('不在动画组')
             self.animationGroupData = {
                 'amount': 0,
                 'time': 0
@@ -196,11 +182,9 @@ class PetGifController:
         return False
     
     def prePlayGif(self, obj):
-        # print(obj)
         self.nowGifObj = copy.deepcopy(obj)
         if self.nowGifObj.get('group', False):
             # 动画组
-            print('prePlayGif group')
             self.animationGroup = True
             self.animationGroupData['time'] = int(time.time() * 1000)
             self.interrupt['group'] = self.nowGifObj.get('interrupt', True)
@@ -213,7 +197,6 @@ class PetGifController:
             self.interrupt['gif'] = self.animationQueue[0].get('interrupt', True)
             self.setQMovieURL(self.nowGifObj['paths'][self.animationQueue[0]['i']])
         else:
-            print('prePlayGif gif')
             self.animationGroup = False
             self.animationQueue = []
             self.interrupt['gif'] = self.nowGifObj.get('interrupt', True)

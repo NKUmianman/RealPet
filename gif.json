@@ -37,7 +37,17 @@
             "path": "./petGif/Eat/Happy/back_lay/back_lay.gif"
         }
     ],
-    "touch": [
+    "bodyTouch": [
+        {
+            "path": "./petGif/Touch_Body/A_Happy/tb1/tb1.gif",
+            "interrupt": false
+        },
+        {
+            "path": "./petGif/Touch_Body/B_Happy/tb1/tb1.gif",
+            "interrupt": false
+        }
+    ],
+    "headTouch": [
         {
             "path": "./petGif/Touch_Body/A_Happy/tb1/tb1.gif",
             "interrupt": false
@@ -48,6 +58,9 @@
     ],
     "say": [
         "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif"
+    ],
+    "shoot": [
+        "./petGif/Shutdown/Nomal_1/Nomal_1.gif"
     ],
     "orders": {
         "defaultHappy": [
