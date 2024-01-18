@@ -1,7 +1,7 @@
 import cv2
 import mediapipe as mp
 import time
-
+import math
 
 class GestureRecognition:
     def __init__(self, signal_list=None):
@@ -168,6 +168,9 @@ class GestureRecognition:
                         if self.detect_bodytouch_gesture(handsPoints):
                             cv2.putText(img, "Body Touch Gesture Detected", (30, 100),
                                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
+                        if self.detect_shooting_gesture(handsPoints):
+                            cv2.putText(img, "Shoot Gesture Detected", (30, 100),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
                         # if self.signal_list and self.index_finger_trajectory!=(0,0):
                         #     self.signal_list(self.index_finger_trajectory)
                 # else:
@@ -223,7 +226,37 @@ class GestureRecognition:
                 return True
         self.signal_list[4].set_variable(False)
         return False
+    def detect_shooting_gesture(self, handLms):
+        thumb_tip = handLms[4]   # 拇指指尖
+        thumb_mid = handLms[3]   # 拇指第二关节
+        index_finger_tip = handLms[8]   # 食指指尖
+        index_finger_base = handLms[5]   # 食指第二关节
 
+        # 判断拇指朝上
+        thumb_vector = (thumb_tip[0] - thumb_mid[0], thumb_tip[1] - thumb_mid[1])
+        thumb_angle = math.degrees(math.atan2(thumb_vector[1], thumb_vector[0]))  # 拇指向量与y轴的夹角
+        thumb_up = (thumb_angle > -90 and thumb_angle < -70)
+
+        # 判断食指指向屏幕,因为没有z轴，用的是食指到食指基部的距离是否超过阈值判断，如果这个距离比较小就是近似重合，理解成食指指向屏幕，但也不太严谨
+        index_finger_distance_threshold = 40  # 食指到食指基部的距离阈值
+
+        index_finger_distance = math.sqrt(
+            (index_finger_tip[0] - index_finger_base[0]) ** 2 + (index_finger_tip[1] - index_finger_base[1]) ** 2
+        )
+
+        index_finger_pointing = index_finger_distance <= index_finger_distance_threshold
+        # print("thumb_angle",thumb_angle)
+        # print("index_finger_distance",index_finger_distance)
+
+        distance = ((thumb_tip[0] - index_finger_tip[0])**2 +
+                    (thumb_tip[1] - index_finger_tip[1])**2)**0.5
+        
+        if thumb_up and index_finger_pointing and distance>30:
+            self.signal_list[5].set_variable(True)
+            return True   # 检测到开枪手势
+        else:
+            self.signal_list[5].set_variable(False)
+            return False   # 未检测到开枪手势
 
 if __name__ == "__main__":
     gest = GestureRecognition()
