@@ -192,7 +192,7 @@ class GestureRecognition:
         for i in range(1, len(marks)):
             for j in marks[:i]:
                 s = s + abs(j[1] - marks[i][1])
-        return s**0.5
+        return s
 
     # 检测抚摸的手势
     def detect_touch_gesture(self, handspoints):
@@ -201,17 +201,19 @@ class GestureRecognition:
                           handspoints[8], handspoints[12], handspoints[16], handspoints[20]]
             handmarks2 = [handspoints[26], handspoints[30], handspoints[34], handspoints[38],
                           handspoints[29], handspoints[33], handspoints[37], handspoints[41]]
-            s1 = self.detect_touch(handmarks1)
-            s2 = self.detect_touch(handmarks2)
-            if s1 < 35 or s2 <35:
+            if self.detect_touch(handmarks1) < 1000:
                 # self.signal_list[1].set_variable(self.index_finger_trajectory)
+                self.signal_list[3].set_variable(True)
+                return True
+            elif self.detect_touch(handmarks2) < 1000:
                 self.signal_list[3].set_variable(True)
                 return True
         else:
             handmarks = [handspoints[5], handspoints[9], handspoints[13], handspoints[17],
                           handspoints[8], handspoints[12], handspoints[16], handspoints[20]]
             s = self.detect_touch(handmarks)
-            if s < 35:
+            if s < 1000:
+                print("s: ", s)
                 self.signal_list[3].set_variable(True)
                 return True
         self.signal_list[3].set_variable(False)

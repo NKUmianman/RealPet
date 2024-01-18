@@ -17,12 +17,34 @@ os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = "Lib\site-packages\PyQt5\Qt\plugins"
 # 导入常用组件
 # 使用调色板等
 
-
 class handThread(QThread):
+    # 定义一个信号，用于在线程中发射信号
+    touch_signal = pyqtSignal()
+    action_done_signal = pyqtSignal()
+
+    def __init__(self, signal_list=None):
+        super().__init__()
+        self.signal_list = signal_list
+
+    def run(self):
+        while True:
+            # 模拟线程执行任务
+            print('bbbbbbbbbbb')
+            if self.signal_list:
+                movement = self.signal_list[2].get_variable()
+
+                if movement:
+                    # 发射信号，将一个随机值传递给槽函数
+                    self.touch_signal.emit()
+                else:
+                    self.action_done_signal.emit()
+            else:
+                break
+
+class pinchThread(QThread):
     # 定义一个信号，用于在线程中发射信号
     pinch_signal = pyqtSignal(tuple)
     pinch_done_signal = pyqtSignal()
-    bodytouch_signal = pyqtSignal()
 
     def __init__(self, signal_list=None):
         super().__init__()
@@ -39,17 +61,7 @@ class handThread(QThread):
                     # 发射信号，将一个随机值传递给槽函数
                     self.pinch_signal.emit(movement)
                 else:
-                    bodytouch = self.signal_list[2].get_variable()
-                    print('bodytouch:', bodytouch)
-                    if bodytouch:
-                        self.bodytouch_signal.emit()
-                    else:
-                        self.pinch_done_signal.emit()
-                # self.pinch_down_signal.emit()
-                # elif bodytouch:
-                #     self.bodytouch_signal.emit()
-                # else:
-                #     self.pinch_done_signal.emit()
+                    self.pinch_done_signal.emit()
             else:
                 break
 
@@ -111,11 +123,16 @@ class DemoWin(QMainWindow):
             for name in files:
                 if name.endswith(".gif"):
                     self.states.append(os.path.join(root, name))
-        self.handThread = handThread(self.signal_list)
-        self.handThread.pinch_signal.connect(self.fingerMovements)
-        self.handThread.pinch_done_signal.connect(
+        self.pinchThread = pinchThread(self.signal_list)
+        self.pinchThread.pinch_signal.connect(self.fingerMovements)
+        self.pinchThread.pinch_done_signal.connect(
             self.mouseReleaseEvent)
-        self.handThread.bodytouch_signal.connect(self.bodyTouched)
+        # self.pinchThread.bodytouch_signal.connect(self.bodyTouched)
+        self.pinchThread.start()
+
+        self.handThread = handThread(self.signal_list)
+        self.handThread.action_done_signal.connect(self.mouseReleaseEvent)
+        self.handThread.touch_signal.connect(self.bodyTouched)
         self.handThread.start()
 
     def initUI(self):
