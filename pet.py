@@ -1,3 +1,4 @@
+from gif import PetGifController
 from math import e
 import random
 import time
@@ -18,8 +19,6 @@ os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = "Lib\site-packages\PyQt5\Qt\plugins"
 # 导入常用组件
 # 使用调色板等
 
-from gif import PetGifController
-
 
 class handThread(QThread):
     # 定义一个信号，用于在线程中发射信号
@@ -31,7 +30,7 @@ class handThread(QThread):
     def __init__(self, signal_list=None):
         super().__init__()
         self.signal_list = signal_list
-        self.released = False
+        self.done = False
 
     def run(self):
         while True:
@@ -42,12 +41,17 @@ class handThread(QThread):
                 shoot = self.signal_list[5].get_variable()
                 if headtouch:
                     self.head_touch_signal.emit()
+                    self.done = True
                 elif bodytouch:
                     self.body_touch_signal.emit()
+                    self.done = True
                 elif shoot:
                     self.shoot_signal.emit()
+                    self.done = True
                 else:
-                    self.touch_done_signal.emit()
+                    if self.done:
+                        self.touch_done_signal.emit()
+                        self.done = False
 
             else:
                 break
@@ -61,6 +65,7 @@ class pinchThread(QThread):
     def __init__(self, signal_list=None):
         super().__init__()
         self.signal_list = signal_list
+        self.done = False
 
     def run(self):
         while True:
@@ -71,14 +76,18 @@ class pinchThread(QThread):
                 if movement:
                     # 发射信号，将一个随机值传递给槽函数
                     self.pinch_signal.emit(movement)
+                    self.done = True
                 elif movement == False:
-                    self.pinch_done_signal.emit()
+                    if self.done == True:
+                        self.pinch_done_signal.emit()
+                        self.done = False
             else:
                 break
 
 
 class DemoWin(QMainWindow):
-    press_down_timestamp = 0 # 鼠标按下时间戳
+    press_down_timestamp = 0  # 鼠标按下时间戳
+
     def __init__(self, signal_list=None):
         super(DemoWin, self).__init__()
         self.movieurl = ''
@@ -141,12 +150,12 @@ class DemoWin(QMainWindow):
         self.handThread.shoot_signal.connect(self.shootTouched)
         self.handThread.start()
 
-
     def initUI(self):
         # 将窗口设置为动图大小
         self.resize(700, 700)
         self.label1 = QLabel("", self)
-        self.label1.setStyleSheet("font:15pt '楷体';border-width: 1px;color:blue;")  # 设置边框
+        self.label1.setStyleSheet(
+            "font:15pt '楷体';border-width: 1px;color:blue;")  # 设置边框
         # 使用label来显示动画
         self.label = QLabel("", self)
         # label大小设置为动画大小
