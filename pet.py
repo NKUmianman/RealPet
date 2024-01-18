@@ -17,12 +17,40 @@ os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = "Lib\site-packages\PyQt5\Qt\plugins"
 # 导入常用组件
 # 使用调色板等
 
-
 class handThread(QThread):
+    # 定义一个信号，用于在线程中发射信号
+    touch_signal = pyqtSignal()
+    action_done_signal = pyqtSignal()
+
+    def __init__(self, signal_list=None):
+        self.flag = True
+        super().__init__()
+        self.signal_list = signal_list
+
+    def run(self):
+        while True:
+            # 模拟线程执行任务
+            print('bbbbbbbbbbb')
+            if self.signal_list:
+                print("flag: ", self.flag)
+                movement = self.signal_list[2].get_variable()
+
+                if movement:
+                    if self.flag:
+                        # 发射信号，将一个随机值传递给槽函数
+                        self.touch_signal.emit()
+                        self.flag = False
+                else:
+                    if not self.flag:
+                        self.action_done_signal.emit()
+                        self.flag = True
+            else:
+                break
+
+class pinchThread(QThread):
     # 定义一个信号，用于在线程中发射信号
     pinch_signal = pyqtSignal(tuple)
     pinch_done_signal = pyqtSignal()
-    bodytouch_signal = pyqtSignal()
 
     def __init__(self, signal_list=None):
         super().__init__()
@@ -34,14 +62,10 @@ class handThread(QThread):
             print('aaaaaaaaaaaaaaaaaaaaaaaaaaa')
             if self.signal_list:
                 movement = self.signal_list[1].get_variable()
-                bodytouch = self.signal_list[2].get_variable()
-                print('bodytouch:', bodytouch)
+
                 if movement != None:
                     # 发射信号，将一个随机值传递给槽函数
                     self.pinch_signal.emit(movement)
-                # self.pinch_down_signal.emit()
-                elif bodytouch:
-                    self.bodytouch_signal.emit()
                 else:
                     self.pinch_done_signal.emit()
             else:
@@ -105,11 +129,16 @@ class DemoWin(QMainWindow):
             for name in files:
                 if name.endswith(".gif"):
                     self.states.append(os.path.join(root, name))
-        self.handThread = handThread(self.signal_list)
-        self.handThread.pinch_signal.connect(self.fingerMovements)
-        self.handThread.pinch_done_signal.connect(
+        self.pinchThread = pinchThread(self.signal_list)
+        self.pinchThread.pinch_signal.connect(self.fingerMovements)
+        self.pinchThread.pinch_done_signal.connect(
             self.mouseReleaseEvent)
-        self.handThread.bodytouch_signal.connect(self.bodyTouched)
+        # self.pinchThread.bodytouch_signal.connect(self.bodyTouched)
+        self.pinchThread.start()
+
+        self.handThread = handThread(self.signal_list)
+        self.handThread.action_done_signal.connect(self.mouseReleaseEvent)
+        self.handThread.touch_signal.connect(self.bodyTouched)
         self.handThread.start()
 
     def initUI(self):
@@ -286,6 +315,8 @@ class DemoWin(QMainWindow):
         print("手指移动:", value[0], value[1])
 
     def bodyTouched(self):
+        self.click = False
+        self.is_follow_mouse = True
         if self.movieurl != "./petGif/Touch_Body/A_Happy/tb2/tb2.gif":
             self.movie = QMovie("./petGif/Touch_Body/A_Happy/tb2/tb2.gif")
             self.movieurl = "./petGif/Touch_Body/A_Happy/tb2/tb2.gif"
@@ -293,6 +324,7 @@ class DemoWin(QMainWindow):
             self.movie.setScaledSize(QSize(300, 300))
             # 将动画添加到label中
             self.label.setMovie(self.movie)
+
             # 开始播放动画
             self.movie.start()
             print("身体被触摸")
