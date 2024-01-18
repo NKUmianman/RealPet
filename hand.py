@@ -26,8 +26,8 @@ class GestureRecognition:
         thumb_tip = handLms[4]  # 拇指指尖
         index_tip = handLms[8]  # 食指指尖
 
-        distance = ((thumb_tip[0] - index_tip[0])**2 +
-                    (thumb_tip[1] - index_tip[1])**2)**0.5
+        distance = ((thumb_tip[0] - index_tip[0]) ** 2 +
+                    (thumb_tip[1] - index_tip[1]) ** 2) ** 0.5
 
         gesture_threshold = 30  # 调整阈值以适应实际情况
 
@@ -124,10 +124,16 @@ class GestureRecognition:
                                     handsPoints[j] = (xpos, ypos)
                                 elif (result.multi_handedness[i].classification[0].label == 'Left'):
                                     print("Right")
-                                    handsPoints[j+21] = (xpos, ypos)
-                        # self.crawl=self.track_index_finger_movement(handsPoints)
+                                    handsPoints[j + 21] = (xpos, ypos)
+                    # self.index_finger_trajectory=self.track_index_finger_movement(handsPoints)
                     print('handsPoints:', handsPoints)
                     print(len(handsPoints))
+
+                    # if self.detect_pinch_gesture(handsPoints):
+                    # cv2.putText(img, "Pinch Gesture Detected", (30, 100),
+                    # cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
+                    # if self.signalfuctin and self.index_finger_trajectory!=(0,0):
+                    #     self.signalfuctin(self.index_finger_trajectory)
 
                     # if self.detect_pinch_gesture(handsPoints):
                     # cv2.putText(img, "Pinch Gesture Detected", (30, 100),
@@ -142,7 +148,7 @@ class GestureRecognition:
                             xpos = int(lm.x * imgWidth)
                             ypos = int(lm.y * imgHeight)
                             handsPoints.append((xpos, ypos))
-                            cv2.putText(img, str(i), (xpos-25, ypos+5),
+                            cv2.putText(img, str(i), (xpos - 25, ypos + 5),
                                         cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 2)
                             # if i==4:
                             #     cv2.circle(img, (xpos, ypos), 10, (0,0,255), cv2.FILLED)
@@ -153,15 +159,14 @@ class GestureRecognition:
                         if self.detect_pinch_gesture(handsPoints):
                             cv2.putText(img, "Pinch Gesture Detected", (30, 100),
                                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
-
-                        if self.detect_touch_gesture(handsPoints):
+                        elif self.detect_touch_gesture(handsPoints):
                             cv2.putText(img, "Touch Gesture Detected", (30, 100),
                                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
-                        # if self.signal_list and self.crawl!=(0,0):
-                        #     self.signal_list(self.crawl)
+                        # if self.signal_list and self.index_finger_trajectory!=(0,0):
+                        #     self.signal_list(self.index_finger_trajectory)
 
                 self.cTime = time.time()
-                fps = 1/(self.cTime-self.pTime)
+                fps = 1 / (self.cTime - self.pTime)
                 self.pTime = self.cTime
                 cv2.putText(img, f"fps: {int(fps)}", (30, 50),
                             cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
@@ -177,6 +182,34 @@ class GestureRecognition:
                 if state == True:
                     print("hand线程退出")
                     break
+
+    # 计算八个关节点竖直方向的偏差
+    def detect_touch(self, marks):
+        s = 0.0
+        for i in range(1, len(marks)):
+            for j in marks[:i]:
+                s = s + abs(j[1] - marks[i][1])
+        return s**0.5
+
+    # 检测抚摸的手势
+    def detect_touch_gesture(self, handspoints):
+        if len(handspoints)>21:
+            handmarks1 = [handspoints[5], handspoints[9], handspoints[13], handspoints[17],
+                          handspoints[8], handspoints[12], handspoints[16], handspoints[20]]
+            handmarks2 = [handspoints[26], handspoints[30], handspoints[34], handspoints[38],
+                          handspoints[29], handspoints[33], handspoints[37], handspoints[41]]
+            s1 = self.detect_touch(handmarks1)
+            s2 = self.detect_touch(handmarks2)
+            if s1 < 35 or s2 <35:
+                # self.signal_list[1].set_variable(self.index_finger_trajectory)
+                return True
+        else:
+            handmarks = [handspoints[5], handspoints[9], handspoints[13], handspoints[17],
+                          handspoints[8], handspoints[12], handspoints[16], handspoints[20]]
+            s = self.detect_touch(handmarks)
+            if s < 35:
+                return True
+        return False
 
 
 if __name__ == "__main__":
