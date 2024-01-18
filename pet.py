@@ -2,6 +2,7 @@ from math import e
 import random
 import time
 from PyQt5.QtGui import QIcon, QMovie
+from PyQt5.QtCore import QUrl, pyqtSlot
 from threading import Thread
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QApplication, QMainWindow
@@ -16,6 +17,8 @@ os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = "Lib\site-packages\PyQt5\Qt\plugins"
 # 导入QT,其中包含一些常量，例如颜色等
 # 导入常用组件
 # 使用调色板等
+
+from gif import PetGifController
 
 
 class handThread(QThread):
@@ -51,6 +54,7 @@ class handThread(QThread):
 class DemoWin(QMainWindow):
     def __init__(self, signal_list=None):
         super(DemoWin, self).__init__()
+        self.movieurl = ''
         self.initUI()
         # 初始化，不规则窗口
         self.setWindowFlags(Qt.FramelessWindowHint |
@@ -89,13 +93,14 @@ class DemoWin(QMainWindow):
         y = ['不要随便摸人家啦', '每次见到主人都很开心呀', '话说最近主人都没理我诶', '再摸我的话小心我生气了', '恭喜发财大吉大利']
         self.setToolTip(random.choice(y))
         # 每隔一段时间做个动作
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.randomAct)
-        self.timer.start(7000)
+        # 以基础默认动作为主，随机间隔一段时间做其他动作
+        # self.timer = QTimer()
+        # self.timer.timeout.connect(self.randomAct)
+        # self.timer.start(1000)
         self.condition = 0
         self.talk_condition = 0
 
-        # 每隔一段时间做个动作
+        # 每隔一段时间说一句话
         self.timer1 = QTimer()
         self.timer1.timeout.connect(self.talk)
         self.timer1.start(5000)
@@ -112,6 +117,7 @@ class DemoWin(QMainWindow):
         self.handThread.bodytouch_signal.connect(self.bodyTouched)
         self.handThread.start()
 
+
     def initUI(self):
         # 将窗口设置为动图大小
         self.resize(700, 700)
@@ -123,19 +129,39 @@ class DemoWin(QMainWindow):
         # label大小设置为动画大小
         self.label.setFixedSize(300, 300)
         # 设置动画路径
-        self.movie = QMovie("./petGif/Default/Nomal/2/2.gif")
-        self.movieurl = "./petGif/Default/Nomal/2/2.gif"
+        # self.movie = QMovie("./petGif/Default/Nomal/2/2.gif")
+        # self.movieurl = "./petGif/Default/Nomal/2/2.gif"
+        # self.setQMovieURL("./petGif/StartUp/Happy_1/Happy_1.gif")
+        # 将信号与槽关联
+        # self.movie.started.connect(self.on_movieee_started)
+        # self.movie.finished.connect(self.on_movieee_finished)
+        # self.movie.frameChanged.connect(self.on_movieee_frameChanged)
+
+        # print(self.movie.loopCount())
 
         # 宠物大小
-        self.movie.setScaledSize(QSize(300, 300))
+        # self.movie.setScaledSize(QSize(300, 300))
         # 将动画添加到label中
-        self.label.setMovie(self.movie)
+        # self.label.setMovie(self.movie)
         # 开始播放动画
-        self.movie.start()
+        # self.movie.start()
         # 透明窗口
         # self.setWindowOpacity(1)
         # 添加窗口标题
+        # self.setQMovieURL("./petGif/Default/Nomalss/2/2.gif")
         self.setWindowTitle("GIFDemo")
+
+        self.PetGifController = PetGifController(self.label, (300, 300))
+
+    def on_movieee_started(self):
+        print("Gif开始播放")
+    
+    def on_movieee_finished(self):
+        print("Gif播放完成")
+    
+    def on_movieee_frameChanged(self, i):
+        # print(i)
+        pass
 
     '''鼠标左键按下时, 宠物将和鼠标位置绑定'''
 
@@ -146,43 +172,26 @@ class DemoWin(QMainWindow):
             self.mouse_drag_pos = event.globalPos() - self.pos()
             event.accept()
             self.setCursor(QCursor(Qt.OpenHandCursor))
-            self.movie = QMovie("./petGif/Touch_Body/A_Happy/tb2/tb2.gif")
-            self.movieurl = "./petGif/Touch_Body/A_Happy/tb2/tb2.gif"
-            # 宠物大小
-            self.movie.setScaledSize(QSize(300, 300))
-            # 将动画添加到label中
-            self.label.setMovie(self.movie)
-            # 开始播放动画
-            self.movie.start()
+            self.setQMovieURL("./petGif/Touch_Body/A_Happy/tb2/tb2.gif")
+            self.PetGifController.playGifByStatus('touch')
     '''鼠标移动, 则宠物也移动'''
 
     def mouseMoveEvent(self, event):
         if Qt.LeftButton and self.is_follow_mouse:
             self.click = False
-            if self.movieurl != "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif":
-                self.movie = QMovie(
-                    "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif")
-                self.movieurl = "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif"
-                self.movie.setScaledSize(QSize(300, 300))
-                self.label.setMovie(self.movie)
-                self.movie.start()
+            self.setQMovieURL("./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif")
+            self.PetGifController.playGifByStatus('move')
             self.move(event.globalPos() - self.mouse_drag_pos)
-            print("鼠标移动：", event.globalPos() - self.mouse_drag_pos)
+            # print("鼠标移动：", event.globalPos() - self.mouse_drag_pos)
             event.accept()
     '''鼠标释放时, 取消绑定'''
 
     def mouseReleaseEvent(self, event=None):
         if self.click == False:
             # 设置动画路径
-            self.movie = QMovie("./petGif/Default/Nomal/2/2.gif")
-            self.movieurl = "./petGif/Default/Nomal/2/2.gif"
-            # 宠物大小
-            self.movie.setScaledSize(QSize(300, 300))
-            # 将动画添加到label中
-            self.label.setMovie(self.movie)
-            # 开始播放动画
-            self.movie.start()
+            self.setQMovieURL("./petGif/Default/Nomal/2/2.gif")
         self.is_follow_mouse = False
+        self.PetGifController.playGifByStatus('default')
         self.setCursor(QCursor(Qt.ArrowCursor))
 
     def enterEvent(self, event):  # 鼠标移进时调用
@@ -233,26 +242,11 @@ class DemoWin(QMainWindow):
                 print("状态变更")
                 state = random.choice(self.states)
                 print(state)
-                self.movie = QMovie(state)
-                self.movieurl = state
-                # 宠物大小
-                self.movie.setScaledSize(QSize(300, 300))
-                # 将动画添加到label中
-                self.label.setMovie(self.movie)
-                # 开始播放动画
-                self.movie.start()
+                self.setQMovieURL(state)
                 self.condition = 1
             else:
                 print("状态还原")
-                # 设置动画路径
-                self.movie = QMovie("./petGif/Default/Nomal/2/2.gif")
-                self.movieurl = "./petGif/Default/Nomal/2/2.gif"
-                # 宠物大小
-                self.movie.setScaledSize(QSize(300, 300))
-                # 将动画添加到label中
-                self.label.setMovie(self.movie)
-                # 开始播放动画
-                self.movie.start()
+                self.setQMovieURL("./petGif/Default/Nomal/2/2.gif")
                 self.condition = 0
 
     def talk(self):
@@ -274,28 +268,24 @@ class DemoWin(QMainWindow):
         # 标记点击事件为非点击
         self.click = False
         self.is_follow_mouse = True
-        if self.movieurl != "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif":
-            self.movie = QMovie(
-                "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif")
-            self.movieurl = "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif"
-            self.movie.setScaledSize(QSize(300, 300))
-            self.label.setMovie(self.movie)
-            self.movie.start()
+        self.setQMovieURL("./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif")
         # 移动宠物到当前鼠标位置减去初始拖动位置的距离
         self.move(self.pos().x()+value[0], self.pos().y()+value[1])
         print("手指移动:", value[0], value[1])
 
     def bodyTouched(self):
-        if self.movieurl != "./petGif/Touch_Body/A_Happy/tb2/tb2.gif":
-            self.movie = QMovie("./petGif/Touch_Body/A_Happy/tb2/tb2.gif")
-            self.movieurl = "./petGif/Touch_Body/A_Happy/tb2/tb2.gif"
-            # 宠物大小
-            self.movie.setScaledSize(QSize(300, 300))
-            # 将动画添加到label中
-            self.label.setMovie(self.movie)
-            # 开始播放动画
-            self.movie.start()
-            print("身体被触摸")
+        self.setQMovieURL("./petGif/Touch_Body/A_Happy/tb2/tb2.gif")
+        print("身体被触摸")
+
+    '''设置gif路径'''
+    def setQMovieURL(self, url):
+        if self.movieurl != url:
+            pass
+            # self.movie = QMovie(url)
+            # self.movieurl = url
+            # self.movie.setScaledSize(QSize(300, 300))
+            # self.label.setMovie(self.movie)
+            # self.movie.start()
 
 
 def run(signal_list=None):

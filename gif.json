@@ -1,0 +1,96 @@
+{
+    "start": [
+        "./petGif/StartUp/Happy_1/Happy_1.gif",
+        "./petGif/StartUp/Happy/Happy.gif",
+        {
+            "path": "./petGif/StartUp/PoorCondition/PoorCondition.gif",
+            "time": [[0, 6], [21, 24]],
+            "force": true
+        }
+    ],
+    "default": [
+        {
+            "id": "group1",
+            "group": true,
+            "paths": [
+                "./petGif/Default/Happy/1/1.gif",
+                "./petGif/Default/Happy/2/2.gif",
+                "./petGif/Default/Happy/3/3.gif"
+            ],
+            "orderId": "defaultHappy"
+        },
+        {
+            "time": [[0, 6], [21, 24]],
+            "group": true,
+            "paths": [
+                "./petGif/Sleep/A_Happy/A_Happy.gif",
+                "./petGif/Sleep/B_Happy/B_Happy.gif",
+                "./petGif/Sleep/C_Happy/C_Happy.gif"
+            ],
+            "weight": 20,
+            "orderId": "sleepHappy",
+            "force": true
+        },
+        {
+            "time": [[7, 8], [12, 13], [17, 18]],
+            "weight": 30,
+            "path": "./petGif/Eat/Happy/back_lay/back_lay.gif"
+        }
+    ],
+    "touch": [
+        {
+            "path": "./petGif/Touch_Body/A_Happy/tb1/tb1.gif",
+            "interrupt": false
+        }
+    ],
+    "move": [
+        "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif"
+    ],
+    "say": [
+        "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif"
+    ],
+    "orders": {
+        "defaultHappy": [
+            {
+                "i": 0,
+                "amount": 1
+            },
+            {
+                "i": 1,
+                "time": [2000, 5000]
+            },
+            {
+                "i": 2,
+                "amount": 1
+            },
+            {
+                "i": 1,
+                "time": [2000, 4000]
+            },
+            {
+                "i": 0,
+                "amount": 1
+            },
+            {
+                "i": 1,
+                "time": [5000, 10000]
+            }
+        ],
+        "sleepHappy": [
+            {
+                "i": 0,
+                "amount": 1
+            },
+            {
+                "i": 1,
+                "time": [5000, 20000]
+            },
+            {
+                "i": 2,
+                "amount": 1,
+                "interrupt": false,
+                "exit": true
+            }
+        ]
+    }
+}
