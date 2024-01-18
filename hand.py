@@ -59,29 +59,29 @@ class GestureRecognition:
                 self.signalflag = False
         return None
 
-    # def detect_touch_gesture(self, handLms):
-    #     root = handLms[0]  # 手掌根部
-    #     thumb_tip = handLms[4]  # 拇指指尖
-    #     middle_tip = handLms[12]  # 中指指尖
-    #     ring_tip = handLms[16]  # 无名指指尖
-    #     pinky_tip = handLms[20]  # 小指指尖
-    #
-    #     distances = [((tip[0] - root[0])**2 +
-    #                   (tip[1] - root[1])**2)**0.5 for tip in (thumb_tip, middle_tip, ring_tip, pinky_tip)]
-    #
-    #     # 设置手势的阈值，根据需要进行调整
-    #     fingers_threshold = 70  # 其他指头并拢的距离阈值
-    #
-    #     # 食指指尖距离摄像头够近，并且其他指头都在一定距离内
-    #     if distances[0] < fingers_threshold and \
-    #             distances[1] < fingers_threshold and \
-    #             distances[2] < fingers_threshold and \
-    #             distances[3] < fingers_threshold:
-    #         self.signal_list[3].set_variable(True)
-    #         return True
-    #     else:
-    #         self.signal_list[3].set_variable(False)
-    #         return False
+    def detect_touch_gesture(self, handLms):
+        root = handLms[0]  # 手掌根部
+        thumb_tip = handLms[4]  # 拇指指尖
+        middle_tip = handLms[12]  # 中指指尖
+        ring_tip = handLms[16]  # 无名指指尖
+        pinky_tip = handLms[20]  # 小指指尖
+
+        distances = [((tip[0] - root[0])**2 +
+                      (tip[1] - root[1])**2)**0.5 for tip in (thumb_tip, middle_tip, ring_tip, pinky_tip)]
+
+        # 设置手势的阈值，根据需要进行调整
+        fingers_threshold = 70  # 其他指头并拢的距离阈值
+
+        # 食指指尖距离摄像头够近，并且其他指头都在一定距离内
+        if distances[0] < fingers_threshold and \
+                distances[1] < fingers_threshold and \
+                distances[2] < fingers_threshold and \
+                distances[3] < fingers_threshold:
+            self.signal_list[3].set_variable(True)
+            return True
+        else:
+            self.signal_list[3].set_variable(False)
+            return False
 
     def run(self):
         while True:
@@ -160,8 +160,12 @@ class GestureRecognition:
                             cv2.putText(img, "Pinch Gesture Detected", (30, 100),
                                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
 
-                        if self.detect_touch_gesture(handsPoints):
+                        if self.detect_headtouch_gesture(handsPoints):
                             cv2.putText(img, "Touch Gesture Detected", (30, 100),
+                                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
+
+                        if self.detect_touch_gesture(handsPoints):
+                            cv2.putText(img, "Head Touch Gesture Detected", (30, 100),
                                         cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 3)
                         # if self.signal_list and self.index_finger_trajectory!=(0,0):
                         #     self.signal_list(self.index_finger_trajectory)
@@ -195,7 +199,7 @@ class GestureRecognition:
         return s
 
     # 检测抚摸的手势
-    def detect_touch_gesture(self, handspoints):
+    def detect_headtouch_gesture(self, handspoints):
         if len(handspoints)>21:
             handmarks1 = [handspoints[5], handspoints[9], handspoints[13], handspoints[17],
                           handspoints[8], handspoints[12], handspoints[16], handspoints[20]]
@@ -203,10 +207,10 @@ class GestureRecognition:
                           handspoints[29], handspoints[33], handspoints[37], handspoints[41]]
             if self.detect_touch(handmarks1) < 1000:
                 # self.signal_list[1].set_variable(self.index_finger_trajectory)
-                self.signal_list[3].set_variable(True)
+                self.signal_list[4].set_variable(True)
                 return True
             elif self.detect_touch(handmarks2) < 1000:
-                self.signal_list[3].set_variable(True)
+                self.signal_list[4].set_variable(True)
                 return True
         else:
             handmarks = [handspoints[5], handspoints[9], handspoints[13], handspoints[17],
@@ -214,9 +218,9 @@ class GestureRecognition:
             s = self.detect_touch(handmarks)
             if s < 1000:
                 print("s: ", s)
-                self.signal_list[3].set_variable(True)
+                self.signal_list[4].set_variable(True)
                 return True
-        self.signal_list[3].set_variable(False)
+        self.signal_list[4].set_variable(False)
         return False
 
 

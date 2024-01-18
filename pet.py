@@ -33,12 +33,17 @@ class handThread(QThread):
             # print('bbbbbbbbbbb')
             if self.signal_list:
                 print("flag: ", self.flag)
-                movement = self.signal_list[2].get_variable()
+                movement = self.signal_list[4].get_variable()
+
                 if movement:
-                    # 发射信号，将movement传递给槽函数
-                    self.touch_signal.emit()
+                    if self.flag:
+                        # 发射信号，将一个随机值传递给槽函数
+                        self.touch_signal.emit()
+                        self.flag = False
                 else:
-                    self.action_done_signal.emit()
+                    if not self.flag:
+                        self.action_done_signal.emit()
+                        self.flag = True
             else:
                 break
 
@@ -131,8 +136,8 @@ class DemoWin(QMainWindow):
         self.pinchThread.start()
 
         self.handThread = handThread(self.signal_list)
-        self.handThread.touch_signal.connect(self.bodyTouched)
         self.handThread.action_done_signal.connect(self.mouseReleaseEvent)
+        self.handThread.touch_signal.connect(self.headTouch)
         self.handThread.start()
 
     def initUI(self):
@@ -323,6 +328,19 @@ class DemoWin(QMainWindow):
             self.movie.start()
             print("身体被触摸")
 
+    def headTouch(self):
+        self.click = False
+        self.is_follow_mouse = True
+        if self.movieurl != "./petGif/Touch_Body/B_Happy/tb1/tb1.gif":
+            self.movie = QMovie("./petGif/Touch_Body/B_Happy/tb1/tb1.gif")
+            self.movieurl = "./petGif/Touch_Body/B_Happy/tb1/tb1.gif"
+            # 宠物大小
+            self.movie.setScaledSize(QSize(300, 300))
+            # 将动画添加到label中
+            self.label.setMovie(self.movie)
+
+            # 开始播放动画
+            self.movie.start()
 
 def run(signal_list=None):
     app = QApplication(sys.argv)
