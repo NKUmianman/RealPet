@@ -15,13 +15,26 @@ def facetask(shared_resource):
     feature = face.FaceRecognition(signal_list=shared_resource)
     feature.run()
 
-if __name__=="__main__":
-    index_finger_trajectory=SharedResource()
-    stop_program=SharedResource()
+
+def pettask(shared_resource):
+    pet.run(signal_list=shared_resource)
+
+
+if __name__ == "__main__":
+    cap = cv2.VideoCapture(0)
+    face_feature = SharedResource()
+    pinch = SharedResource()
+    bodytouch = SharedResource()
+    headtouch = SharedResource()
+    shoot = SharedResource()
+    stop_program = SharedResource()
     # 创建线程对象
-    thread1 = threading.Thread(target=handtask,args=([index_finger_trajectory,stop_program],))
-    thread2 = threading.Thread(target=pettask,args=([index_finger_trajectory,stop_program],))
-    thread3 = threading.Thread(target=facetask,args=([stop_program],))
+    hand_thread = threading.Thread(target=handtask, args=(
+        [cap, stop_program, pinch, bodytouch, headtouch,shoot],))
+    face_thread = threading.Thread(
+        target=facetask, args=([cap, stop_program, face_feature],))
+    pet_thread = threading.Thread(target=pettask, args=(
+        [stop_program, pinch, bodytouch, headtouch,face_feature,shoot],))
     # 启动线程
 
     face_thread.start()

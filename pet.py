@@ -23,8 +23,7 @@ class handThread(QThread):
     head_touch_signal = pyqtSignal()
     touch_done_signal = pyqtSignal()
     body_touch_signal = pyqtSignal()
-    shoot_touch_signal = pyqtSignal()
-
+    shoot_signal = pyqtSignal()
     def __init__(self, signal_list=None):
         super().__init__()
         self.signal_list = signal_list
@@ -36,13 +35,13 @@ class handThread(QThread):
             if self.signal_list:
                 headtouch = self.signal_list[3].get_variable()
                 bodytouch = self.signal_list[2].get_variable()
-                shoottouch = self.signal_list[4].get_variable()
+                shoot = self.signal_list[5].get_variable()
                 if headtouch:
                     self.head_touch_signal.emit()
                 elif bodytouch:
                     self.body_touch_signal.emit()
-                elif shoottouch:
-                    self.shoot_touch_signal.emit()
+                elif shoot:
+                    self.shoot_signal.emit()
                 else:
                     self.touch_done_signal.emit()
 
@@ -141,7 +140,7 @@ class DemoWin(QMainWindow):
         self.handThread.touch_done_signal.connect(self.actionDoneEvent)
         self.handThread.head_touch_signal.connect(self.headTouch)
         self.handThread.body_touch_signal.connect(self.bodyTouched)
-        self.handThread.shoot_touch_signal.connect(self.shootTouched)
+        self.handThread.shoot_signal.connect(self.shootTouched)
         self.handThread.start()
 
     def initUI(self):
@@ -254,12 +253,7 @@ class DemoWin(QMainWindow):
         quitAction = menu.addAction("退出")
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action == quitAction:
-            if self.signalfuction:
-                self.signalfuction[1].set_variable(True)
-                print("设置退出")
-            qApp.quit()
-        if action == hide:
-            self.setWindowOpacity(0)
+            self.quit()
     '''退出程序'''
 
     def quit(self):
@@ -346,6 +340,7 @@ class DemoWin(QMainWindow):
             self.movie.start()
             print("身体被触摸")
     def shootTouched(self):
+        print("如何呢")
         self.click = False
         self.is_follow_mouse = True
         if self.movieurl != "./petGif/Shutdown/Happy_1/Happy_1.gif":
