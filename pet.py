@@ -24,7 +24,7 @@ class handThread(QThread):
     action_done_signal = pyqtSignal()
 
     def __init__(self, signal_list=None):
-        self.flag = True
+        # self.flag = True
         super().__init__()
         self.signal_list = signal_list
 
@@ -32,18 +32,18 @@ class handThread(QThread):
         while True:
             # 模拟线程执行任务
             if self.signal_list:
-                print("flag: ", self.flag)
+                # print("flag: ", self.flag)
                 bodytouch = self.signal_list[4].get_variable()
 
                 if bodytouch:
-                    if self.flag:
+                    # if self.flag:
                         # 发射信号，将一个随机值传递给槽函数
-                        self.touch_signal.emit()
-                        self.flag = False
+                    self.touch_signal.emit()
+                        # self.flag = False
                 else:
-                    if not self.flag:
-                        self.action_done_signal.emit()
-                        self.flag = True
+                    # if not self.flag:
+                    self.action_done_signal.emit()
+                        # self.flag = True
             else:
                 break
 
