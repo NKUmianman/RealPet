@@ -60,7 +60,10 @@
         "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif"
     ],
     "shoot": [
-        "./petGif/Shutdown/Nomal_1/Nomal_1.gif"
+        {
+            "path": "./petGif/Shutdown/Nomal_1/Nomal_1.gif",
+            "interrupt": false
+        }
     ],
     "orders": {
         "defaultHappy": [
