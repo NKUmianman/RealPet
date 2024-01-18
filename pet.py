@@ -30,10 +30,12 @@ class handThread(QThread):
     def run(self):
         while True:
             # 模拟线程执行任务
-            # print('bbbbbbbbbbb')
+            print('bbbbbbbbbbb')
             if self.signal_list:
                 print("flag: ", self.flag)
+
                 movement = self.signal_list[4].get_variable()
+
 
                 if movement:
                     if self.flag:
@@ -59,11 +61,12 @@ class pinchThread(QThread):
     def run(self):
         while True:
             # 模拟线程执行任务
-            # print('aaaaaaaaaaaaaaaaaaaaaaaaaaa')
+            print('aaaaaaaaaaaaaaaaaaaaaaaaaaa')
             if self.signal_list:
                 movement = self.signal_list[1].get_variable()
+
                 if movement != None:
-                    # 发射信号，将movement传递给槽函数
+                    # 发射信号，将一个随机值传递给槽函数
                     self.pinch_signal.emit(movement)
                 else:
                     self.pinch_done_signal.emit()
@@ -137,7 +140,9 @@ class DemoWin(QMainWindow):
 
         self.handThread = handThread(self.signal_list)
         self.handThread.action_done_signal.connect(self.mouseReleaseEvent)
+
         self.handThread.touch_signal.connect(self.headTouch)
+
         self.handThread.start()
 
     def initUI(self):
