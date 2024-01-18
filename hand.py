@@ -49,15 +49,14 @@ class GestureRecognition:
 
             # 处理移动向量（例如，打印或在你的应用程序中使用它）
             print("食指移动：", movement_vector)
-            if self.signal_list:
-                self.signal_list[2].set_variable(self.crawl)
-                self.pinch_signal_flag = True
+            if self.signalfuctin:
+                self.signalfuctin[0].set_variable(self.index_finger_trajectory)
+                self.signalflag=True
             return movement_vector
-        if self.pinch_signal_flag== True:
-            if self.signal_list:
-                self.signal_list[2].set_variable(False)
-                print("设置了False")
-                self.pinch_signal_flag = False
+        if self.signalflag==True:
+            if self.signalfuctin:
+                self.signalfuctin[0].set_variable(None)
+                self.signalflag=False
         return None
 
     def detect_touch_gesture(self, handLms):
@@ -212,15 +211,12 @@ class GestureRecognition:
             # print("handsPoints:",handsPoints)
             if cv2.waitKey(1) == ord('q'):
                 break
-            if self.signal_list:
-                # 设置非信号函数非阻塞检查
-                self.signal_list[1].flag = True
-                state = self.signal_list[1].get_variable()
+            if self.signalfuctin:
+                self.signalfuctin[1].flag=True
+                state=self.signalfuctin[1].get_variable()
                 # print(state)
-                if state == True:
-                    print("hand线程退出")
+                if state==True:
                     break
-
 
 if __name__ == "__main__":
     gest = GestureRecognition()
