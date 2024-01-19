@@ -86,7 +86,15 @@
         "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif"
     ],
     "say": [
-        "./petGif/Raise/Raised_Dynamic/Nomal/2/2.gif"
+        {
+            "group": true,
+            "paths": [
+                "./petGif/Say/Self/A/A.gif",
+                "./petGif/Say/Self/B_1/B_1.gif",
+                "./petGif/Say/Self/C/C.gif"
+            ],
+            "orderId": "speak"
+        }
     ],
     "shoot": [
         {
@@ -150,6 +158,20 @@
                 "amount": 1,
                 "interrupt": false,
                 "exit": true
+            }
+        ],
+        "speak": [
+            {
+                "i": 0,
+                "amount": 1
+            },
+            {
+                "i": 1,
+                "time": 2000
+            },
+            {
+                "i": 2,
+                "amount": 1
             }
         ]
     }

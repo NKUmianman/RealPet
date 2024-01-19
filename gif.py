@@ -66,6 +66,9 @@ class PetGifController:
                             'path': self.nowGifObj['paths'][exit['i']]
                         })
                         self.waitingObjList.append(obj)
+                elif not self.interrupt['group']:
+                    self.waitingObjList += [{'path': self.nowGifObj['paths'][d['i']]} for d in self.animationQueue]
+                    self.waitingObjList.append(obj)
             else:
                 if self.interrupt['gif']:
                     self.prePlayGif(obj)
@@ -192,7 +195,7 @@ class PetGifController:
                 self.animationQueue = copy.deepcopy(self.orders[self.nowGifObj['orderId']])
                 for q in self.animationQueue:
                     if 'time' in q.keys():
-                        if type(q['time'] == list):
+                        if type(q['time']) == list:
                             q['time'] = random.randint(q['time'][0], q['time'][1])
             self.interrupt['gif'] = self.animationQueue[0].get('interrupt', True)
             self.setQMovieURL(self.nowGifObj['paths'][self.animationQueue[0]['i']])
