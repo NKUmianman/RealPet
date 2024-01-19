@@ -1,28 +1,67 @@
 {
     "start": [
         {
-            "content": ["好困啊"],
-            "time": [[0, 6], [23, 24]],
+            "content": [
+                "好困啊"
+            ],
+            "time": [
+                [
+                    0,
+                    6
+                ],
+                [
+                    23,
+                    24
+                ]
+            ],
             "force": true
         },
         {
-            "content": ["早上好"],
-            "time": [[6, 11]],
+            "content": [
+                "早上好"
+            ],
+            "time": [
+                [
+                    6,
+                    11
+                ]
+            ],
             "force": true
         },
         {
-            "content": ["中午好"],
-            "time": [[11, 14]],
+            "content": [
+                "中午好"
+            ],
+            "time": [
+                [
+                    11,
+                    14
+                ]
+            ],
             "force": true
         },
         {
-            "content": ["下午好"],
-            "time": [[14, 18]],
+            "content": [
+                "下午好"
+            ],
+            "time": [
+                [
+                    14,
+                    18
+                ]
+            ],
             "force": true
         },
         {
-            "content": ["晚上好"],
-            "time": [[18, 23]],
+            "content": [
+                "晚上好"
+            ],
+            "time": [
+                [
+                    18,
+                    23
+                ]
+            ],
             "force": true
         }
     ],
@@ -53,6 +92,9 @@
     ],
     "shoot": [
         "bia~ 倒了"
+    ],
+    "feature": [
+        ""
     ],
     "setting": {
         "interval": 5000,

@@ -31,7 +31,16 @@
         },
         {
             "id": "sleepHappy",
-            "time": [[0, 6], [21, 24]],
+            "time": [
+                [
+                    0,
+                    6
+                ],
+                [
+                    21,
+                    24
+                ]
+            ],
             "group": true,
             "paths": [
                 "./petGif/Sleep/A_Happy/A_Happy.gif",
@@ -84,6 +93,9 @@
             "path": "./petGif/Shutdown/Nomal_1/Nomal_1.gif",
             "interrupt": false
         }
+    ],
+    "feature": [
+        "./petGif/Say/Self/B_1/B_1.gif"
     ],
     "orders": {
         "defaultHappy": [

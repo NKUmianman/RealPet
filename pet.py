@@ -1,3 +1,4 @@
+from code import interact
 from gif import PetGifController
 from say import PetSayController
 from math import e
@@ -222,10 +223,14 @@ class DemoWin(QMainWindow):
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
+        seeAction = menu.addAction("秘密")
         quitAction = menu.addAction("退出")
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action == quitAction:
             self.quit()
+        elif action == seeAction:
+            feature = self.signal_list[4].get_variable()
+            self.featureResponse(feature)
     '''退出程序'''
 
     def quit(self):
@@ -265,6 +270,11 @@ class DemoWin(QMainWindow):
         self.click = False
         self.PetGifController.playGifByStatus('headTouch')
         self.PetSayController.speakByStatus('headTouch', speak=True)
+
+    def featureResponse(self, feature):
+        print(feature)
+        # self.PetGifController.playGifByStatus('feature')
+        # self.PetSayController.speakByStatus('feature', speak=True)
 
 
 def run(signal_list=None):
