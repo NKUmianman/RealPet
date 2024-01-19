@@ -188,7 +188,7 @@ class DemoWin(QMainWindow):
     def mouseReleaseEvent(self, event=None):
         if event.button() == Qt.LeftButton:
             self.is_follow_mouse = False
-            if int(time.time() * 1000) - self.press_down_timestamp < 100:
+            if int(time.time() * 1000) - self.press_down_timestamp < 300:
                 self.PetGifController.playGifByStatus('bodyTouch')
                 self.PetSayController.speakByStatus('bodyTouch', speak=True)
             self.PetGifController.playGifByStatus('default')
@@ -266,6 +266,12 @@ class DemoWin(QMainWindow):
         self.click = False
         self.PetGifController.playGifByStatus('headTouch')
         self.PetSayController.speakByStatus('headTouch', speak=True)
+    
+    '''说话调用'''
+    def speakByContent(self, content, hold=2000):
+        self.PetGifController.playGifByStatus('say')
+        self.PetGifController.playGifByStatus('default')
+        self.PetSayController.speakByContent(content, hold=hold)
 
 
 def run(signal_list=None):
