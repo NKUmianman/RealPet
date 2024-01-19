@@ -223,14 +223,16 @@ class DemoWin(QMainWindow):
 
     def contextMenuEvent(self, event):
         menu = QMenu(self)
-        seeAction = menu.addAction("秘密")
+        seeAction = menu.addAction("互动")
         quitAction = menu.addAction("退出")
         action = menu.exec_(self.mapToGlobal(event.pos()))
         if action == quitAction:
             self.quit()
         elif action == seeAction:
-            feature = self.signal_list[4].get_variable()
-            self.featureResponse(feature)
+            features = self.signal_list[4].get_variable()
+            print(features)
+            content = self.featureContent(features)
+            self.speakByContent(content)
     '''退出程序'''
 
     def quit(self):
@@ -270,17 +272,49 @@ class DemoWin(QMainWindow):
         self.click = False
         self.PetGifController.playGifByStatus('headTouch')
         self.PetSayController.speakByStatus('headTouch', speak=True)
-    
+
+    def featureContent(self, features):
+        contents = []
+        if '眼袋' in features:
+            contents.append('哇，主人好像有点累了，有眼袋呢。要注意休息哦！')
+        if '秃头' in features:
+            contents.append('哈哈，主人是不是经常熬夜啊？头发都秃了一片了。')
+        if '刘海' in features:
+            contents.append('主人的刘海好有型啊，像明星一样！')
+        if '大嘴唇' in features:
+            contents.append('哇，主人的嘴唇好大，笑起来一定很迷人！')
+        if '大鼻子' in features:
+            contents.append('主人的鼻子好大，真有特色！')
+        if '眼镜' in features:
+            contents.append('哇，主人戴眼镜的样子好有气质！')
+        if '没有胡子' in features:
+            contents.append('看起来主人今天刮了胡子，皮肤好光滑！')
+        if '男生' in features:
+            contents.append('嗨，帅气哥哥，有什么我可以帮你的吗？')
+        else:
+            contents.append('嗨，漂亮姐姐，今天过得怎么样？')
+        if '项链' in features:
+            contents.append('主人的项链好漂亮，是什么材质的？')
+        if '浓眉' in features:
+            contents.append('哇，主人的浓眉好有个性，很迷人呢！')
+        if '微笑' in features:
+            contents.append('主人的微笑真是灿烂，让人感觉温暖！')
+        if '年轻' in features:
+            contents.append('主人看起来真是年轻有活力，永葆青春啊！')
+        if '白皮肤' in features:
+            contents.append('哇，主人的皮肤真白皙，简直是亮白无瑕的肌肤！')
+
+# Add more conditions for other attributes as needed
+
+        choice = random.choice(contents)
+        return choice
+
     '''说话调用'''
+
     def speakByContent(self, content, hold=2000):
         self.PetGifController.playGifByStatus('say')
         self.PetGifController.playGifByStatus('default')
         self.PetSayController.speakByContent(content, hold=hold)
-
-    def featureResponse(self, feature):
-        print(feature)
-        # self.PetGifController.playGifByStatus('feature')
-        # self.PetSayController.speakByStatus('feature', speak=True)
 
 
 def run(signal_list=None):

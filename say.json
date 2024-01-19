@@ -93,9 +93,6 @@
     "shoot": [
         "bia~ 倒了"
     ],
-    "feature": [
-        ""
-    ],
     "setting": {
         "interval": 5000,
         "probability": 50

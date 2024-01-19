@@ -30,11 +30,11 @@ if __name__ == "__main__":
     stop_program = SharedResource()
     # 创建线程对象
     hand_thread = threading.Thread(target=handtask, args=(
-        [cap, stop_program, pinch, bodytouch, headtouch,shoot],))
+        [cap, stop_program, pinch, bodytouch, headtouch, shoot],))
     face_thread = threading.Thread(
         target=facetask, args=([cap, stop_program, face_feature],))
     pet_thread = threading.Thread(target=pettask, args=(
-        [stop_program, pinch, bodytouch, headtouch,face_feature,shoot],))
+        [stop_program, pinch, bodytouch, headtouch, face_feature, shoot],))
     # 启动线程
 
     face_thread.start()

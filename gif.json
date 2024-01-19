@@ -87,13 +87,8 @@
     ],
     "say": [
         {
-            "group": true,
-            "paths": [
-                "./petGif/Say/Self/A/A.gif",
-                "./petGif/Say/Self/B_1/B_1.gif",
-                "./petGif/Say/Self/C/C.gif"
-            ],
-            "orderId": "speak"
+            "path": "./petGif/Say/Self/B_1/B_1.gif",
+            "interrupt": false
         }
     ],
     "shoot": [
@@ -101,9 +96,6 @@
             "path": "./petGif/Shutdown/Nomal_1/Nomal_1.gif",
             "interrupt": false
         }
-    ],
-    "feature": [
-        "./petGif/Say/Self/B_1/B_1.gif"
     ],
     "orders": {
         "defaultHappy": [
