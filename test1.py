@@ -1,7 +1,10 @@
 a = {
-    'weight': 90
+    'weight': 90,
+    'sas': 99
 }
 
 # a = 'asc'
-a= []
-print(a.pop(0), a)
+# a= []
+for aa, bb in a.items():
+    print(aa, bb)
+print(a.get('as', -1))

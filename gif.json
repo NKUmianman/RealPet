@@ -20,6 +20,7 @@
             "orderId": "defaultHappy"
         },
         {
+            "id": "sleepHappy",
             "time": [[0, 6], [21, 24]],
             "group": true,
             "paths": [

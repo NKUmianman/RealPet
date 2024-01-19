@@ -1,0 +1,61 @@
+{
+    "start": [
+        {
+            "content": ["好困啊"],
+            "time": [[0, 6], [23, 24]],
+            "force": true
+        },
+        {
+            "content": ["早上好"],
+            "time": [[6, 11]],
+            "force": true
+        },
+        {
+            "content": ["中午好"],
+            "time": [[11, 14]],
+            "force": true
+        },
+        {
+            "content": ["下午好"],
+            "time": [[14, 18]],
+            "force": true
+        },
+        {
+            "content": ["晚上好"],
+            "time": [[18, 23]],
+            "force": true
+        }
+    ],
+    "default": [
+        {
+            "path": "./data.txt"
+        },
+        {
+            "setting": true,
+            "interval": 7000,
+            "probability": 100
+        },
+        "不错不错"
+    ],
+    "move": [
+        "快把我放下",
+        {
+            "setting": true,
+            "interval": 1000,
+            "probability": 100
+        }
+    ],
+    "bodyTouch": [
+        "摸摸摸摸"
+    ],
+    "headTouch": [
+        "摸摸摸摸"
+    ],
+    "shoot": [
+        "bia~ 倒了"
+    ],
+    "setting": {
+        "interval": 5000,
+        "probability": 50
+    }
+}

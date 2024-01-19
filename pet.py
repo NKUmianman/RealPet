@@ -1,4 +1,5 @@
 from gif import PetGifController
+from say import PetSayController
 from math import e
 import random
 import time
@@ -129,14 +130,6 @@ class DemoWin(QMainWindow):
         y = ['不要随便摸人家啦', '每次见到主人都很开心呀', '话说最近主人都没理我诶', '再摸我的话小心我生气了', '恭喜发财大吉大利']
         self.setToolTip(random.choice(y))
 
-        self.condition = 0
-        self.talk_condition = 0
-
-        # 每隔一段时间说一句话
-        self.timer1 = QTimer()
-        self.timer1.timeout.connect(self.talk)
-        self.timer1.start(5000)
-
         self.pinchThread = pinchThread(self.signal_list)
         self.pinchThread.pinch_signal.connect(self.fingerMovements)
         self.pinchThread.pinch_done_signal.connect(self.actionDoneEvent)
@@ -154,8 +147,10 @@ class DemoWin(QMainWindow):
         # 将窗口设置为动图大小
         self.resize(700, 700)
         self.label1 = QLabel("", self)
+        self.label1.setText('')
+        self.label1.adjustSize()
         self.label1.setStyleSheet(
-            "font:15pt '楷体';border-width: 1px;color:blue;")  # 设置边框
+            "font: bold;font:25px '楷体';background-color:gray;color: white")  # 设置边框
         # 使用label来显示动画
         self.label = QLabel("", self)
         # label大小设置为动画大小
@@ -166,6 +161,7 @@ class DemoWin(QMainWindow):
         self.setWindowTitle("GIFDemo")
 
         self.PetGifController = PetGifController(self.label, (300, 300))
+        self.PetSayController = PetSayController(self.label1)
 
     '''鼠标左键按下时, 宠物将和鼠标位置绑定'''
 
@@ -182,7 +178,8 @@ class DemoWin(QMainWindow):
     def mouseMoveEvent(self, event):
         if Qt.LeftButton and self.is_follow_mouse:
             self.click = False
-            self.PetGifController.playGifByStatus('move', forceInterrupt=True)
+            self.PetGifController.playGifByStatus('move')
+            self.PetSayController.speakByStatus('move', speak=True)
             self.move(event.globalPos() - self.mouse_drag_pos)
             # print("鼠标移动：", event.globalPos() - self.mouse_drag_pos)
             event.accept()
@@ -193,13 +190,16 @@ class DemoWin(QMainWindow):
             self.is_follow_mouse = False
             if int(time.time() * 1000) - self.press_down_timestamp < 100:
                 self.PetGifController.playGifByStatus('bodyTouch')
+                self.PetSayController.speakByStatus('bodyTouch', speak=True)
             self.PetGifController.playGifByStatus('default')
+            self.PetSayController.speakByStatus('default')
             self.setCursor(QCursor(Qt.ArrowCursor))
 
     def actionDoneEvent(self):
         if self.click == False and self.is_follow_mouse == False:
             print('actionDoneEvent')
             self.PetGifController.playGifByStatus('default')
+            self.PetSayController.speakByStatus('default')
             self.setCursor(QCursor(Qt.ArrowCursor))
 
     def enterEvent(self, event):  # 鼠标移进时调用
@@ -240,18 +240,6 @@ class DemoWin(QMainWindow):
     def showwin(self):
         self.setWindowOpacity(1)
 
-    def talk(self):
-        if not self.talk_condition:
-            self.label1.setText(random.choice(self.sentence))
-            self.label1.setStyleSheet(
-                "font: bold;font:25px '楷体';background-color:gray;color: white;border-radius: 20px")  # 设置边框
-            self.label1.adjustSize()
-            self.talk_condition = 1
-        else:
-            self.label1.setText("")
-            self.label1.adjustSize()
-            self.talk_condition = 0
-
     def fingerMovements(self, value):
         # print(f"Received signal from thread: {value}")
         # 当左键按下且宠物跟随鼠标时
@@ -261,19 +249,23 @@ class DemoWin(QMainWindow):
         # self.is_follow_mouse = True
         # 移动宠物到当前鼠标位置减去初始拖动位置的距离
         self.move(self.pos().x()+value[0]*3, self.pos().y()+value[1]*3)
+        self.PetSayController.speakByStatus('move', speak=True)
         self.PetGifController.playGifByStatus('move')
         # print("手指移动:", value[0], value[1])
 
     def bodyTouched(self):
         self.PetGifController.playGifByStatus('bodyTouch')
+        self.PetSayController.speakByStatus('bodyTouch', speak=True)
 
     def shootTouched(self):
         self.click = False
         self.PetGifController.playGifByStatus('shoot')
+        self.PetSayController.speakByStatus('shoot', speak=True)
 
     def headTouch(self):
         self.click = False
         self.PetGifController.playGifByStatus('headTouch')
+        self.PetSayController.speakByStatus('headTouch', speak=True)
 
 
 def run(signal_list=None):
