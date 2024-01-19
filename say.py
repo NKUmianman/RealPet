@@ -28,6 +28,14 @@ class PetSayController:
         self.preloadFullFile()
         self.speakByStatus('start', speak=True)
         self.speakByStatus('default')
+
+    '''传入说话的内容'''
+    def speakByContent(self, content, hold=2000):
+        self.timer.stop()
+        self.label.setText(content)
+        self.label.adjustSize()
+        self.timerClear.start(hold)
+        self.cleared = False
     
     '''调用'''
     def speakByStatus(self, status, speak=False, id=None):
@@ -118,9 +126,3 @@ class PetSayController:
         self.label.adjustSize()
         self.timer.start(self.interval)
         self.timerClear.stop()
-
-def test():
-    s = PetSayController(1)
-
-if __name__ == '__main__':
-    test()
