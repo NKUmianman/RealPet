@@ -29,7 +29,7 @@ class PetGifController:
             'group': True, # 允许动画组被打断
             'gif': True # 允许gif被打断
         }
-        with open(self.path, 'r') as file:
+        with open(self.path, 'r', encoding='utf-8') as file:
             self.data = json.load(file)
 
         self.movie = QMovie()

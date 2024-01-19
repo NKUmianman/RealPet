@@ -30,16 +30,8 @@
             "orderId": "defaultHappy"
         },
         {
-            "time": [
-                [
-                    0,
-                    6
-                ],
-                [
-                    21,
-                    24
-                ]
-            ],
+            "id": "sleepHappy",
+            "time": [[0, 6], [21, 24]],
             "group": true,
             "paths": [
                 "./petGif/Sleep/A_Happy/A_Happy.gif",
