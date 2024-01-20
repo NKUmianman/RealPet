@@ -183,7 +183,7 @@ class GestureRecognition:
                 self.pTime = self.cTime
                 cv2.putText(img, f"fps: {int(fps)}", (30, 50),
                             cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
-                # cv2.imshow('img', img)
+                cv2.imshow('img', img)
             # print("handsPoints:",handsPoints)
             if cv2.waitKey(1) == ord('q'):
                 break
